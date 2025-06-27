@@ -6,6 +6,7 @@ use App\Models\Voedselpakket;
 use App\Models\Klant;
 use Illuminate\Http\Request;
 
+
 class VoedselpakketController extends Controller
 {
     public function index()

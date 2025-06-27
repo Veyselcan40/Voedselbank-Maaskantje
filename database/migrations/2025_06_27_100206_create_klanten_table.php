@@ -11,7 +11,8 @@ class CreateKlantenTable extends Migration
         Schema::create('klanten', function (Blueprint $table) {
             $table->id(); // maakt een auto-increment 'id' kolom
             $table->string('naam');
-            // Voeg andere velden toe die je nodig hebt
+            $table->string('telefoon')->nullable();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

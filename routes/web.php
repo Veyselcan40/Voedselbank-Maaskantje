@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\VoedselpakketController;
 
 Route::resource('voedselpakket', VoedselpakketController::class);
+Route::get('/voedselpakketten', [VoedselpakketController::class, 'index'])->name('voedselpakketten.index');
+Route::get('/voedselpakketten/create', [VoedselpakketController::class, 'create'])->name('voedselpakketten.create');
+Route::post('/voedselpakketten', [VoedselpakketController::class, 'store'])->name('voedselpakketten.store');
+Route::get('/voedselpakketten/{id}/edit', [VoedselpakketController::class, 'edit'])->name('voedselpakketten.edit');
+Route::put('/voedselpakketten/{id}', [VoedselpakketController::class, 'update'])->name('voedselpakketten.update');
+Route::delete('/voedselpakketten/{id}', [VoedselpakketController::class, 'destroy'])->name('voedselpakketten.destroy');
 
 Route::get('/', function () {
     return view('welcome');
