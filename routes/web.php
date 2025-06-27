@@ -61,7 +61,10 @@ Route::post('/klanten/{id}/bewerken', function (Request $request, $id) {
     $request->validate([
         'naam' => 'required|string|max:255',
         'adres' => 'required|string|max:255',
-        'telefoon' => 'required|string|max:20',
+        'telefoon' => [
+            'required',
+            'digits_between:10,12'
+        ],
         'email' => 'required|email|max:255',
     ]);
     $klant = Klant::findOrFail($id);
@@ -83,7 +86,14 @@ Route::post('/klanten/nieuw', function (Request $request) {
         'naam' => 'required|string|max:255',
         'adres' => 'required|string|max:255',
         'telefoon' => 'required|string|max:20',
-        'email' => 'required|email|max:255',
+        'email' => [
+            'required',
+            'email',
+            'max:255',
+            'unique:klanten,email',
+        ],
+    ], [
+        'email.unique' => 'Een klant met dit e-mailadres bestaat al.',
     ]);
     Klant::create([
         'naam' => $request->naam,

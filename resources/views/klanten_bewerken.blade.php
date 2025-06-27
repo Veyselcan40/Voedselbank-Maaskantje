@@ -29,14 +29,14 @@
                             <label for="telefoon" class="block font-medium text-sm text-gray-700">Telefoonnummer</label>
                             <input type="text" name="telefoon" id="telefoon" class="mt-1 block w-full border-gray-300 rounded" required value="{{ old('telefoon', $klant->telefoon) }}">
                             @error('telefoon')
-                                <div class="text-red-600 text-sm">{{ $message }}</div>
+                                <div class="text-red-600 text-sm">Het telefoonnummer moet minimaal 10 en maximaal 12 cijfers bevatten</div>
                             @enderror
                         </div>
                         <div class="mb-4">
                             <label for="email" class="block font-medium text-sm text-gray-700">E-mailadres</label>
                             <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded" required value="{{ old('email', $klant->email) }}">
                             @error('email')
-                                <div class="text-red-600 text-sm">{{ $message }}</div>
+                                <div class="text-red-600 text-sm">Voer een geldig e-mailadres in</div>
                             @enderror
                         </div>
                         <div>
@@ -49,3 +49,5 @@
         </div>
     </div>
 </x-app-layout>
+
+
