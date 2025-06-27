@@ -56,4 +56,50 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    Route::get('voorraad', function () {
+        // Haal producten op uit database of array
+        $producten = session('producten', [
+            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80],
+            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45],
+        ]);
+        return view('voorraad', compact('producten'));
+    })->name('voorraad');
+
+    Route::post('voorraad/toevoegen', function (\Illuminate\Http\Request $request) {
+        $producten = session('producten', [
+            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80],
+            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45],
+        ]);
+
+        $validated = $request->validate([
+            'streepjescode' => ['required', 'string', 'max:255'],
+            'naam' => ['required', 'string', 'max:255'],
+            'categorie' => ['required', 'string', 'max:255'],
+            'aantal' => ['required', 'integer', 'min:1'],
+        ]);
+
+        // Controleer op unieke streepjescode
+        foreach ($producten as $product) {
+            if ($product['streepjescode'] === $validated['streepjescode']) {
+                return redirect()->route('voorraad')
+                    ->withInput()
+                    ->withErrors(['streepjescode' => 'Een product met deze streepjescode bestaat al in de voorraad.'])
+                    ->with('error', 'Een product met deze streepjescode bestaat al in de voorraad.');
+            }
+        }
+
+        // Voeg nieuw product toe
+        $producten[] = [
+            'streepjescode' => $validated['streepjescode'],
+            'naam' => $validated['naam'],
+            'categorie' => $validated['categorie'],
+            'aantal' => $validated['aantal'],
+        ];
+        session(['producten' => $producten]);
+
+        return redirect()->route('voorraad')->with('success', 'Product succesvol toegevoegd.');
+    })->name('voorraad.toevoegen');
 });
