@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,8 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/klantenoverzicht', function () {
-    $klanten = [
+Route::get('/klantenoverzicht', function (Request $request) {
+    $dummyKlanten = [
         [
             'naam' => 'Familie Jansen',
             'adres' => 'Dorpsstraat 1, 1234 AB Plaats',
@@ -38,7 +39,32 @@ Route::get('/klantenoverzicht', function () {
             'email' => 'bakker@email.com',
         ],
     ];
+    $sessionKlanten = $request->session()->get('extra_klanten', []);
+    $klanten = array_merge($dummyKlanten, $sessionKlanten);
     return view('klantenoverzicht', compact('klanten'));
 })->name('klantenoverzicht');
+
+Route::get('/klanten/nieuw', function () {
+    return view('klanten_nieuw');
+})->name('klanten.nieuw');
+
+Route::post('/klanten/nieuw', function (Request $request) {
+    $request->validate([
+        'naam' => 'required|string|max:255',
+        'adres' => 'required|string|max:255',
+        'telefoon' => 'required|string|max:20',
+        'email' => 'required|email|max:255',
+    ]);
+    $klant = [
+        'naam' => $request->naam,
+        'adres' => $request->adres,
+        'telefoon' => $request->telefoon,
+        'email' => $request->email,
+    ];
+    $extraKlanten = $request->session()->get('extra_klanten', []);
+    $extraKlanten[] = $klant;
+    $request->session()->put('extra_klanten', $extraKlanten);
+    return redirect()->route('klantenoverzicht')->with('success', 'Nieuwe klant succesvol geregistreerd.');
+})->name('klanten.nieuw.post');
 
 require __DIR__.'/auth.php';
