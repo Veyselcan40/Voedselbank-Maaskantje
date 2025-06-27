@@ -59,14 +59,13 @@
                                    class="text-blue-600 hover:underline hover:text-blue-800 text-sm font-semibold transition">
                                     Bewerken
                                 </a>
-                                <form method="POST" action="{{ route('leverancier.destroy', $leverancier->id) }}" onsubmit="return confirm('Weet je zeker dat je deze leverancier wilt verwijderen?');" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="text-red-600 hover:underline hover:text-red-800 text-sm font-semibold transition bg-transparent border-0 p-0 m-0 align-baseline">
-                                        Verwijderen
-                                    </button>
-                                </form>
+                                <button
+                                    type="button"
+                                    class="text-red-600 hover:underline hover:text-red-800 text-sm font-semibold transition bg-transparent border-0 p-0 m-0 align-baseline"
+                                    onclick="openDeleteModal({{ $leverancier->id }})"
+                                >
+                                    Verwijderen
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -97,6 +96,37 @@
                 @endif
             </nav>
         </div>
+
+        <!-- Modal -->
+        <div id="deleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
+                <h2 class="text-lg font-semibold mb-4 text-gray-900 text-center">Weet je zeker dat je deze leverancier wilt verwijderen?</h2>
+                <form id="deleteForm" method="POST" class="flex flex-col gap-3">
+                    @csrf
+                    @method('DELETE')
+                    <div class="flex justify-center gap-2 mt-4">
+                        <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">Annuleren</button>
+                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">Verwijderen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            function openDeleteModal(id) {
+                const modal = document.getElementById('deleteModal');
+                const form = document.getElementById('deleteForm');
+                form.action = "{{ url('leverancier') }}/" + id;
+                modal.classList.remove('hidden');
+            }
+            function closeDeleteModal() {
+                document.getElementById('deleteModal').classList.add('hidden');
+            }
+            // Sluit modal bij ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape") closeDeleteModal();
+            });
+        </script>
     </div>
 </x-app-layout>
+
 
