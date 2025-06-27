@@ -88,11 +88,22 @@ Route::middleware('auth')->group(function () {
 
     Route::post('voorraad/toevoegen', function (\Illuminate\Http\Request $request) {
         $validated = $request->validate([
-            'streepjescode' => ['required', 'string', 'max:255', 'unique:producten,streepjescode'],
+            'streepjescode' => ['nullable', 'string', 'max:255', 'unique:producten,streepjescode'],
             'naam' => ['required', 'string', 'max:255'],
             'categorie' => ['required', 'string', 'max:255'],
             'aantal' => ['required', 'integer', 'min:1'],
         ]);
+        // Controleer of er al een product met dezelfde naam bestaat
+        if (\App\Models\Product::where('naam', $validated['naam'])->exists()) {
+            return redirect()->route('voorraad')->with('error', 'Kan niet zelfde product toevoegen, alleen wijzigen.');
+        }
+        // Genereer streepjescode indien niet opgegeven
+        if (empty($validated['streepjescode'])) {
+            do {
+                $generated = strval(random_int(100000000000, 999999999999)); // 12-cijferige code
+            } while (\App\Models\Product::where('streepjescode', $generated)->exists());
+            $validated['streepjescode'] = $generated;
+        }
         \App\Models\Product::create($validated);
         return redirect()->route('voorraad')->with('success', 'Product succesvol toegevoegd.');
     })->name('voorraad.toevoegen');
