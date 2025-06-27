@@ -20,7 +20,6 @@
                     </div>
                     <div class="overflow-x-auto">
                         @if($klanten->isEmpty())
-                        <!-- dit is de unhappy scenario voor de read -->
                             <div class="p-6 text-center text-gray-600">
                                 Er zijn nog geen klanten beschikbaar.
                             </div>
@@ -28,33 +27,18 @@
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead>
                                     <tr>
-
                                         <th class="px-4 py-2 text-left font-medium text-gray-700">Naam</th>
                                         <th class="px-4 py-2 text-left font-medium text-gray-700">Adres</th>
                                         <th class="px-4 py-2 text-left font-medium text-gray-700">Telefoonnummer</th>
                                         <th class="px-4 py-2 text-left font-medium text-gray-700">E-mailadres</th>
                                         <th class="px-4 py-2 text-left font-medium text-gray-700">Acties</th>
-
-                                        <td class="px-4 py-2">{{ $klant->naam }}</td>
-                                        <td class="px-4 py-2">{{ $klant->adres ?? '' }}</td>
-                                        <td class="px-4 py-2">{{ $klant->telefoon }}</td>
-                                        <td class="px-4 py-2">{{ $klant->email }}</td>
-                                        <td class="px-4 py-2">
-                                            <a href="#" class="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">Bewerken</a>
-                                            <form action="#" method="POST" class="inline-block" onsubmit="return confirm('Weet je zeker dat je deze klant wilt verwijderen?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Verwijderen</button>
-                                            </form>
-                                        </td>
-
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100">
                                     @foreach($klanten as $klant)
                                         <tr>
                                             <td class="px-4 py-2">{{ $klant->naam }}</td>
-                                            <td class="px-4 py-2">{{ $klant->adres }}</td>
+                                            <td class="px-4 py-2">{{ $klant->adres ?? '' }}</td>
                                             <td class="px-4 py-2">{{ $klant->telefoon }}</td>
                                             <td class="px-4 py-2">{{ $klant->email }}</td>
                                             <td class="px-4 py-2">
@@ -92,5 +76,6 @@
         </div>
     </div>
 </x-app-layout>
+
 
 

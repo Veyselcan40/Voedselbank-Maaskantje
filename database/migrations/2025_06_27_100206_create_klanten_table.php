@@ -8,13 +8,16 @@ class CreateKlantenTable extends Migration
 {
     public function up()
     {
-        Schema::create('klanten', function (Blueprint $table) {
-            $table->id(); // maakt een auto-increment 'id' kolom
-            $table->string('naam');
-            $table->string('telefoon')->nullable();
-            $table->string('email')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('klanten')) {
+            Schema::create('klanten', function (Blueprint $table) {
+                $table->id();
+                $table->string('naam');
+                $table->string('adres')->default(''); // <-- voeg default waarde toe
+                $table->string('telefoon')->nullable();
+                $table->string('email')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()
