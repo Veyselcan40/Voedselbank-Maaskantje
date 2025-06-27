@@ -18,7 +18,27 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/klantenoverzicht', function () {
-    return view('klantenoverzicht');
+    $klanten = [
+        [
+            'naam' => 'Familie Jansen',
+            'adres' => 'Dorpsstraat 1, 1234 AB Plaats',
+            'telefoon' => '0612345678',
+            'email' => 'jansen@email.com',
+        ],
+        [
+            'naam' => 'Familie De Vries',
+            'adres' => 'Hoofdweg 10, 5678 CD Stad',
+            'telefoon' => '0687654321',
+            'email' => 'devries@email.com',
+        ],
+        [
+            'naam' => 'Familie Bakker',
+            'adres' => 'Kerklaan 5, 4321 EF Dorp',
+            'telefoon' => '0622334455',
+            'email' => 'bakker@email.com',
+        ],
+    ];
+    return view('klantenoverzicht', compact('klanten'));
 })->name('klantenoverzicht');
 
 require __DIR__.'/auth.php';
