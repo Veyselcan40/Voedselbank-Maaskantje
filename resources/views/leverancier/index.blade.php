@@ -2,7 +2,7 @@
     <!-- Witte balk onder de navbar met schaduw -->
     <div class="w-full bg-white shadow">
         <div class="max-w-7xl mx-auto px-6 py-4">
-            <h1 class="text-base font-semibold text-gray-900 tracking-tight">Leveranciers Overzicht</h1>
+            <h1 class="text-base font-semibold text-black tracking-tight">Leveranciers Overzicht</h1>
         </div>
     </div>
     <!-- Extra ruimte tussen de balk en de container -->
@@ -14,7 +14,7 @@
             </div>
         @endif
         <div class="flex items-center justify-between mb-6">
-            <p class="text-base font-semibold text-gray-900 tracking-tight">Overzicht van alle leveranciers</p>
+            <p class="text-base font-semibold text-black tracking-tight">Overzicht van alle leveranciers</p>
             <a href="{{ route('leverancier.create') }}"
                class="text-green-600 hover:underline hover:text-green-800 text-sm font-semibold transition">
                 Leverancier toevoegen
@@ -27,26 +27,26 @@
         @endif
         <div class="overflow-x-auto rounded-lg border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200 bg-white">
-                <thead class="bg-gray-50">
+                <thead class="bg-white">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Bedrijfsnaam</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Adres</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Contactpersoon</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">E-mail</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Telefoonnummer</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Eerstvolgende levering</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Acties</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Bedrijfsnaam</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Adres</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Contactpersoon</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">E-mail</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Telefoonnummer</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Eerstvolgende levering</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Acties</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
                     @foreach($leveranciers as $leverancier)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-4 py-2 text-sm text-gray-900">{{ $leverancier->Bedrijfsnaam }}</td>
-                        <td class="px-4 py-2 text-sm text-gray-900">{{ $leverancier->Adres }}</td>
-                        <td class="px-4 py-2 text-sm text-gray-900">{{ $leverancier->Contactpersoon }}</td>
-                        <td class="px-4 py-2 text-sm text-gray-900">{{ $leverancier->Email }}</td>
-                        <td class="px-4 py-2 text-sm text-gray-900">{{ $leverancier->Telefoon }}</td>
-                        <td class="px-4 py-2 text-sm text-gray-900">
+                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Bedrijfsnaam }}</td>
+                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Adres }}</td>
+                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Contactpersoon }}</td>
+                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Email }}</td>
+                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Telefoon }}</td>
+                        <td class="px-4 py-2 text-sm text-black">
                             @if($leverancier->EerstvolgendeLevering)
                                 {{ \Carbon\Carbon::parse($leverancier->EerstvolgendeLevering)->format('d-m-Y H:i') }}
                             @else
