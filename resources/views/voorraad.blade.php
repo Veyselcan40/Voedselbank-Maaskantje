@@ -20,20 +20,33 @@
                         {{ session('success') }}
                     </div>
                 @endif
-                @if(session('error'))
+                @php
+                    // Toon dubbele foutmelding maar één keer
+                    $duplicateError = $errors->first('streepjescode') === 'Er bestaat al een product met deze streepjescode of productnaam.' 
+                        || session('error') === 'Er bestaat al een product met deze streepjescode of productnaam.';
+                @endphp
+                @if($duplicateError)
                     <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg shadow">
-                        {{ session('error') }}
+                        Er bestaat al een product met deze streepjescode of productnaam.
                     </div>
-                @endif
-                @if($errors->has('aantal'))
-                    <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg shadow">
-                        Vul het veld 'Aantal' in met een waarde groter dan 0.
-                    </div>
+                @else
+                    @if(session('error'))
+                        <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg shadow">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if($errors->has('streepjescode'))
+                        <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg shadow">
+                            {{ $errors->first('streepjescode') }}
+                        </div>
+                    @endif
                 @endif
 
                 @php
                     $showForm = old('_show_form') || $errors->any() || request('_show_form');
-                    $categorieen = ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
+                    $showEditForm = isset($showEditForm) && $showEditForm;
+                    $bewerkProduct = old('bewerkProduct') ?? ($bewerkProduct ?? null);
+                    $categorieen = $categorieen ?? ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
                     $producten = $producten ?? [
                         ['streepjescode' => '1234567890123', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120],
                         ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80],
@@ -41,7 +54,74 @@
                     ];
                 @endphp
 
-                @if($showForm)
+                @if($showEditForm && isset($bewerkProduct))
+                    <div class="flex items-center justify-center min-h-[40vh]">
+                        <div class="w-full max-w-6xl bg-white p-10 rounded-xl shadow-lg border border-gray-200">
+                            <h3 class="text-2xl font-semibold mb-8 text-gray-800">Product wijzigen</h3>
+                            <form method="POST" action="{{ route('voorraad.bewerk.opslaan', $bewerkProduct['streepjescode']) }}">
+                                @csrf
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                                    <div>
+                                        <label for="streepjescode" class="block font-medium text-gray-700 mb-1">Streepjescode</label>
+                                        <input type="text"
+                                            name="streepjescode"
+                                            id="streepjescode"
+                                            value="{{ old('streepjescode', $bewerkProduct['streepjescode']) }}"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                                            required
+                                            minlength="13"
+                                            maxlength="13"
+                                            pattern="\d{13}"
+                                            inputmode="numeric"
+                                            placeholder="13 cijfers"
+                                        >
+                                    </div>
+                                    <div>
+                                        <label for="naam" class="block font-medium text-gray-700 mb-1">Productnaam</label>
+                                        <input type="text"
+                                            name="naam"
+                                            id="naam"
+                                            value="{{ old('naam', $bewerkProduct['naam']) }}"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                                            required
+                                            pattern="^[A-Za-zÀ-ÿ\s]+$"
+                                            title="Alleen letters toegestaan"
+                                            autocomplete="off"
+                                        >
+                                    </div>
+                                    <div>
+                                        <label for="categorie" class="block font-medium text-gray-700 mb-1">Categorie</label>
+                                        <select name="categorie" id="categorie"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                                            required>
+                                            <option value="">-- Kies categorie --</option>
+                                            @foreach($categorieen as $cat)
+                                                <option value="{{ $cat }}" @selected(old('categorie', $bewerkProduct['categorie']) == $cat)>{{ $cat }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="aantal" class="block font-medium text-gray-700 mb-1">Aantal</label>
+                                        <input type="number"
+                                            name="aantal"
+                                            id="aantal"
+                                            value="{{ old('aantal', $bewerkProduct['aantal']) }}"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                                            required
+                                        >
+                                    </div>
+                                </div>
+                                <div class="flex justify-between mt-4 w-full">
+                                    <a href="{{ route('voorraad') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold">Annuleren</a>
+                                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                                        Opslaan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @elseif($showForm)
+                    {{-- Toevoegen-formulier --}}
                     <div class="flex items-center justify-center min-h-[40vh]">
                         <div class="w-full max-w-6xl bg-white p-10 rounded-xl shadow-lg border border-gray-200">
                             <h3 class="text-2xl font-semibold mb-8 text-gray-800">Nieuw product toevoegen</h3>

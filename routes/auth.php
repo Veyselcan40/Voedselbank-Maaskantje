@@ -126,10 +126,80 @@ Route::middleware('auth')->group(function () {
 
     // Functies voor bewerken en verwijderen (voorraadbeheer)
     Route::get('voorraad/bewerk/{streepjescode}', function ($streepjescode) {
-        // Hier zou je het product ophalen en een bewerk-formulier tonen
-        // Voor nu: redirect terug met een melding
-        return redirect()->route('voorraad')->with('error', 'Bewerken van producten is nog niet geïmplementeerd.');
+        $producten = session('producten', [
+            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
+        ]);
+        $product = null;
+        foreach ($producten as $p) {
+            if ($p['streepjescode'] === $streepjescode) {
+                $product = $p;
+                break;
+            }
+        }
+        if (!$product) {
+            return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
+        }
+        $categorieen = ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
+        // Toon het wijzigformulier, geef het product en categorieën door
+        return view('voorraad', [
+            'bewerkProduct' => $product,
+            'categorieen' => $categorieen,
+            'producten' => $producten,
+            'showEditForm' => true,
+        ]);
     })->name('voorraad.bewerk');
+
+    Route::post('voorraad/bewerk/{streepjescode}', function (\Illuminate\Http\Request $request, $streepjescode) {
+        $producten = session('producten', [
+            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
+        ]);
+
+        $validated = $request->validate([
+            'streepjescode' => ['required', 'string', 'max:255'],
+            'naam' => ['required', 'string', 'max:255'],
+            'categorie' => ['required', 'string', 'max:255'],
+            'aantal' => ['required', 'integer', 'min:1'],
+        ]);
+
+        // Zoek het huidige product
+        $huidigIndex = null;
+        foreach ($producten as $key => $product) {
+            if ($product['streepjescode'] === $streepjescode) {
+                $huidigIndex = $key;
+                break;
+            }
+        }
+        if ($huidigIndex === null) {
+            return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
+        }
+
+        // Controleer op dubbele streepjescode of naam bij andere producten
+        foreach ($producten as $key => $product) {
+            if ($key === $huidigIndex) continue;
+            if ($product['streepjescode'] === $validated['streepjescode'] || strtolower($product['naam']) === strtolower($validated['naam'])) {
+                return redirect()->route('voorraad.bewerk', $streepjescode)
+                    ->withInput()
+                    ->withErrors(['streepjescode' => 'Er bestaat al een product met deze streepjescode of productnaam.'])
+                    ->with('error', 'Er bestaat al een product met deze streepjescode of productnaam.');
+            }
+        }
+
+        // Werk het product bij
+        $producten[$huidigIndex] = [
+            'streepjescode' => $validated['streepjescode'],
+            'naam' => $validated['naam'],
+            'categorie' => $validated['categorie'],
+            'aantal' => $validated['aantal'],
+            'verwijderbaar' => $producten[$huidigIndex]['verwijderbaar'] ?? true,
+        ];
+        session(['producten' => $producten]);
+
+        return redirect()->route('voorraad')->with('success', 'Product succesvol bijgewerkt.');
+    })->name('voorraad.bewerk.opslaan');
 
     // Wijzig deze route van DELETE naar POST zodat het werkt met standaard HTML forms
     Route::post('voorraad/verwijder/{streepjescode}', function ($streepjescode) {
