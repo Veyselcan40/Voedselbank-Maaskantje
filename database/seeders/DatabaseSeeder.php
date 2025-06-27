@@ -16,9 +16,11 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin',
+            'email' => 'Admin@email.com',
+            'password' => bcrypt('password'),
         ]);
+
 
         // 5 dummy klanten
         Klant::insert([
@@ -63,5 +65,8 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ]);
+
+        $this->call(KlantenSeeder::class);
+
     }
 }
