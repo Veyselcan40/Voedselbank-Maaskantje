@@ -26,6 +26,7 @@
             </div>
         @endif
         <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <!-- Tabel met leveranciersgegevens -->
             <table class="min-w-full divide-y divide-gray-200 bg-white">
                 <thead class="bg-white">
                     <tr>
@@ -92,6 +93,7 @@
             </table>
         </div>
         <div class="mt-6 flex flex-col items-center">
+            <!-- Paginatie met indicator -->
             <nav class="flex space-x-1" role="navigation" aria-label="Pagination">
                 @if ($leveranciers->onFirstPage())
                     <span class="px-3 py-2 bg-gray-100 text-gray-400 border border-gray-200 rounded cursor-default">&laquo;</span>
