@@ -1,6 +1,13 @@
 <x-app-layout>
     <div class="max-w-2xl mx-auto px-6 py-8 bg-white rounded-lg shadow mt-8">
         <h2 class="text-lg font-semibold mb-6 text-gray-900">Leverancier wijzigen</h2>
+        @if ($errors->has('Bedrijfsnaam'))
+            <div class="mb-6 flex justify-center">
+                <div class="px-6 py-3 rounded bg-red-100 text-red-800 border border-red-200 text-center font-semibold">
+                    {{ $errors->first('Bedrijfsnaam') }}
+                </div>
+            </div>
+        @endif
         <form method="POST" action="{{ route('leverancier.update', $leverancier->id) }}">
             @csrf
             @method('PUT')
@@ -38,6 +45,14 @@
                     <option value="boeren" {{ old('Leverancierstype', $leverancier->Leverancierstype) == 'boeren' ? 'selected' : '' }}>Boeren</option>
                 </select>
                 @error('Leverancierstype') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Actief</label>
+                <select name="Actief" required class="mt-1 block w-full rounded border-gray-300 shadow-sm">
+                    <option value="1" {{ old('Actief', $leverancier->Actief) == '1' ? 'selected' : '' }}>Actief</option>
+                    <option value="0" {{ old('Actief', $leverancier->Actief) == '0' ? 'selected' : '' }}>Niet actief</option>
+                </select>
+                @error('Actief') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700">Eerstvolgende levering (optioneel)</label>

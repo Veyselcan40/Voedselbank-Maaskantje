@@ -36,13 +36,14 @@
                         <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Telefoonnummer</th>
                         <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Eerstvolgende levering</th>
                         <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Type</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Actief</th>
                         <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Acties</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
                     @if($leveranciers->count() === 0)
                         <tr>
-                            <td colspan="8" class="px-4 py-8 text-center text-gray-500 text-base">
+                            <td colspan="9" class="px-4 py-8 text-center text-gray-500 text-base">
                                 Er zijn nog geen leveranciers beschikbaar.
                             </td>
                         </tr>
@@ -63,6 +64,13 @@
                             </td>
                             <td class="px-4 py-2 text-sm text-black">{{ ucfirst($leverancier->Leverancierstype) }}</td>
                             <td class="px-4 py-2 text-sm">
+                                @if($leverancier->Actief)
+                                    <span class="px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-semibold">Actief</span>
+                                @else
+                                    <span class="px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-semibold">Niet actief</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2 text-sm">
                                 <div class="flex flex-row gap-4">
                                     <a href="{{ route('leverancier.edit', $leverancier->id) }}"
                                        class="text-blue-600 hover:underline hover:text-blue-800 text-sm font-semibold transition">
@@ -71,7 +79,7 @@
                                     <button
                                         type="button"
                                         class="text-red-600 hover:underline hover:text-red-800 text-sm font-semibold transition bg-transparent border-0 p-0 m-0 align-baseline"
-                                        onclick="openDeleteModal({{ $leverancier->id }})"
+                                        onclick="@if($leverancier->Actief) showActiveModal(); @else openDeleteModal({{ $leverancier->id }}); @endif"
                                     >
                                         Verwijderen
                                     </button>
@@ -107,7 +115,7 @@
             </nav>
         </div>
 
-        <!-- Modal -->
+        <!-- Modal voor verwijderen -->
         <div id="deleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
             <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
                 <h2 class="text-lg font-semibold mb-4 text-gray-900 text-center">Weet je zeker dat je deze leverancier wilt verwijderen?</h2>
@@ -121,6 +129,15 @@
                 </form>
             </div>
         </div>
+        <!-- Modal voor actief niet verwijderen -->
+        <div id="activeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
+                <h2 class="text-lg font-semibold mb-4 text-gray-900 text-center">Hij kan niet verwijderd worden omdat hij actief is</h2>
+                <div class="flex justify-center mt-4">
+                    <button type="button" onclick="closeActiveModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">Sluiten</button>
+                </div>
+            </div>
+        </div>
         <script>
             function openDeleteModal(id) {
                 const modal = document.getElementById('deleteModal');
@@ -131,11 +148,18 @@
             function closeDeleteModal() {
                 document.getElementById('deleteModal').classList.add('hidden');
             }
-            // Sluit modal bij ESC
+            function showActiveModal() {
+                document.getElementById('activeModal').classList.remove('hidden');
+            }
+            function closeActiveModal() {
+                document.getElementById('activeModal').classList.add('hidden');
+            }
             document.addEventListener('keydown', function(e) {
-                if (e.key === "Escape") closeDeleteModal();
+                if (e.key === "Escape") {
+                    closeDeleteModal();
+                    closeActiveModal();
+                }
             });
         </script>
     </div>
 </x-app-layout>
-       

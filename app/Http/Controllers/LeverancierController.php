@@ -48,6 +48,7 @@ class LeverancierController extends Controller
             'Telefoon' => ['required', 'regex:/^[0-9]+$/', 'max:255'],
             'EerstvolgendeLevering' => 'nullable|date',
             'Leverancierstype' => 'required|in:groothandel,supermarkt,boeren',
+            'Actief' => 'required|boolean',
         ], [
             'Email.unique' => 'Een leverancier met dit e-mailadres bestaat al.',
         ]);
@@ -100,6 +101,7 @@ class LeverancierController extends Controller
             ],
             'EerstvolgendeLevering' => 'nullable|date',
             'Leverancierstype' => 'required|in:groothandel,supermarkt,boeren',
+            'Actief' => 'required|boolean',
         ], [
             'Bedrijfsnaam.unique' => 'Deze bedrijfsnaam bestaat al.',
             'Email.email' => 'Voer een geldig e-mailadres in.',

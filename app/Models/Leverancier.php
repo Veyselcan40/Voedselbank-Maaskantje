@@ -17,7 +17,8 @@ class Leverancier extends Model
         'Email',
         'Telefoon',
         'EerstvolgendeLevering',
-        'Leverancierstype'
+        'Leverancierstype',
+        'Actief'
     ];
 }
 

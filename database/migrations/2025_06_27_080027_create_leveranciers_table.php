@@ -20,10 +20,11 @@ return new class extends Migration
             $table->string('Telefoon');
             $table->timestamp('EerstvolgendeLevering')->nullable();
             $table->string('Leverancierstype');
+            $table->boolean('Actief')->default(true); // toegevoegd
             $table->timestamps();
         });
 
-        // Dummy data toevoegen (nu met Leverancierstype)
+        // Dummy data toevoegen (nu met Leverancierstype en Actief)
         \DB::table('leveranciers')->insert([
             [
                 'Bedrijfsnaam' => 'VersGroothandel BV',
@@ -33,6 +34,7 @@ return new class extends Migration
                 'Telefoon' => '0612345678',
                 'EerstvolgendeLevering' => now()->addDays(2),
                 'Leverancierstype' => 'groothandel',
+                'Actief' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -44,6 +46,7 @@ return new class extends Migration
                 'Telefoon' => '0687654321',
                 'EerstvolgendeLevering' => now()->addDays(5),
                 'Leverancierstype' => 'boeren',
+                'Actief' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -55,6 +58,7 @@ return new class extends Migration
                 'Telefoon' => '0622334455',
                 'EerstvolgendeLevering' => null,
                 'Leverancierstype' => 'supermarkt',
+                'Actief' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
