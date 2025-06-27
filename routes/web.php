@@ -3,9 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\VoedselpakketController;
 
-Route::resource('voedselpakketten', VoedselpakketController::class);
 
 
 Route::get('/', function () {
