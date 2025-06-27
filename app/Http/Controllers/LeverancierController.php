@@ -13,7 +13,10 @@ class LeverancierController extends Controller
     public function index()
     {
         try {
-            $leveranciers = Leverancier::paginate(6);
+            $leveranciers = Leverancier::orderByRaw('
+                CASE WHEN EerstvolgendeLevering IS NULL THEN 0 ELSE 1 END,
+                EerstvolgendeLevering DESC
+            ')->paginate(6);
             return view('leverancier.index', compact('leveranciers'));
         } catch (\Exception $e) {
             return view('leverancier.index')->withErrors('Op dit moment kunnen de leveranciersgegevens niet worden geladen. Probeer het later opnieuw.');
@@ -44,6 +47,7 @@ class LeverancierController extends Controller
             ],
             'Telefoon' => ['required', 'regex:/^[0-9]+$/', 'max:255'],
             'EerstvolgendeLevering' => 'nullable|date',
+            'Leverancierstype' => 'required|in:groothandel,supermarkt,boeren',
         ], [
             'Email.unique' => 'Een leverancier met dit e-mailadres bestaat al.',
         ]);
@@ -90,6 +94,7 @@ class LeverancierController extends Controller
                 'max:12'
             ],
             'EerstvolgendeLevering' => 'nullable|date',
+            'Leverancierstype' => 'required|in:groothandel,supermarkt,boeren',
         ], [
             'Email.email' => 'Voer een geldig e-mailadres in.',
             'Email.unique' => 'Een leverancier met dit e-mailadres bestaat al.',

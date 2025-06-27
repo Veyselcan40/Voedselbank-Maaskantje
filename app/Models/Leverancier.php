@@ -16,7 +16,8 @@ class Leverancier extends Model
         'Contactpersoon',
         'Email',
         'Telefoon',
-        'EerstvolgendeLevering'
+        'EerstvolgendeLevering',
+        'Leverancierstype'
     ];
 }
 

@@ -19,10 +19,11 @@ return new class extends Migration
             $table->string('Email');
             $table->string('Telefoon');
             $table->timestamp('EerstvolgendeLevering')->nullable();
+            $table->string('Leverancierstype');
             $table->timestamps();
         });
 
-        // Dummy data toevoegen
+        // Dummy data toevoegen (nu met Leverancierstype)
         \DB::table('leveranciers')->insert([
             [
                 'Bedrijfsnaam' => 'VersGroothandel BV',
@@ -31,6 +32,7 @@ return new class extends Migration
                 'Email' => 'info@versgroothandel.nl',
                 'Telefoon' => '0612345678',
                 'EerstvolgendeLevering' => now()->addDays(2),
+                'Leverancierstype' => 'groothandel',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -41,6 +43,7 @@ return new class extends Migration
                 'Email' => 'contact@fruitexpress.nl',
                 'Telefoon' => '0687654321',
                 'EerstvolgendeLevering' => now()->addDays(5),
+                'Leverancierstype' => 'boeren',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -51,6 +54,7 @@ return new class extends Migration
                 'Email' => 'klaas@bakkerijdeboer.nl',
                 'Telefoon' => '0622334455',
                 'EerstvolgendeLevering' => null,
+                'Leverancierstype' => 'supermarkt',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

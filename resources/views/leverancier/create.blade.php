@@ -28,6 +28,16 @@
                 <input type="text" name="Telefoon" value="{{ old('Telefoon') }}" required pattern="[0-9]*" inputmode="numeric" class="mt-1 block w-full rounded border-gray-300 shadow-sm">
                 @error('Telefoon') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Type leverancier</label>
+                <select name="Leverancierstype" required class="mt-1 block w-full rounded border-gray-300 shadow-sm">
+                    <option value="">Selecteer type</option>
+                    <option value="groothandel" {{ old('Leverancierstype') == 'groothandel' ? 'selected' : '' }}>Groothandel</option>
+                    <option value="supermarkt" {{ old('Leverancierstype') == 'supermarkt' ? 'selected' : '' }}>Supermarkt</option>
+                    <option value="boeren" {{ old('Leverancierstype') == 'boeren' ? 'selected' : '' }}>Boeren</option>
+                </select>
+                @error('Leverancierstype') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700">Eerstvolgende levering (optioneel)</label>
                 <input type="datetime-local" name="EerstvolgendeLevering" value="{{ old('EerstvolgendeLevering') }}" class="mt-1 block w-full rounded border-gray-300 shadow-sm">

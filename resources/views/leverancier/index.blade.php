@@ -35,13 +35,14 @@
                         <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">E-mail</th>
                         <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Telefoonnummer</th>
                         <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Eerstvolgende levering</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Type</th>
                         <th class="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Acties</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
                     @if($leveranciers->count() === 0)
                         <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-gray-500 text-base">
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-500 text-base">
                                 Er zijn nog geen leveranciers beschikbaar.
                             </td>
                         </tr>
@@ -60,6 +61,7 @@
                                     <span class="text-gray-400">Geen gepland</span>
                                 @endif
                             </td>
+                            <td class="px-4 py-2 text-sm text-black">{{ ucfirst($leverancier->Leverancierstype) }}</td>
                             <td class="px-4 py-2 text-sm">
                                 <div class="flex flex-row gap-4">
                                     <a href="{{ route('leverancier.edit', $leverancier->id) }}"
@@ -136,5 +138,4 @@
         </script>
     </div>
 </x-app-layout>
-
-
+       
