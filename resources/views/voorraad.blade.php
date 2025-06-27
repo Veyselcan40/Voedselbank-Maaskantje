@@ -134,14 +134,10 @@
                                         <input type="text"
                                             name="streepjescode"
                                             id="streepjescode"
-                                            value="{{ old('streepjescode') }}"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
-                                            required
-                                            minlength="13"
-                                            maxlength="13"
-                                            pattern="\d{13}"
-                                            inputmode="numeric"
-                                            placeholder="13 cijfers"
+                                            value=""
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition bg-gray-100"
+                                            readonly
+                                            placeholder="Wordt automatisch gegenereerd"
                                         >
                                     </div>
                                     <div>
@@ -229,7 +225,7 @@
                         <div class="w-full bg-yellow-100 text-yellow-900 rounded-lg shadow p-6 text-center text-lg font-semibold mb-6">
                             Geen producten gevonden met deze streepjescode.
                         </div>
-                    @elseif(empty($producten) || count($producten) === 0)
+                    @elseif($producten->isEmpty())
                         <div class="w-full bg-yellow-100 text-yellow-900 rounded-lg shadow p-6 text-center text-lg font-semibold mb-6">
                             Er zijn momenteel geen producten in de voorraad beschikbaar.
                         </div>
@@ -247,10 +243,10 @@
                         <tbody>
                                 @foreach($producten as $product)
                                 <tr class="bg-white hover:bg-blue-50 transition border-b border-gray-100">
-                                    <td class="px-8 py-5">{{ $product['streepjescode'] }}</td>
-                                    <td class="px-8 py-5">{{ $product['naam'] }}</td>
-                                    <td class="px-8 py-5">{{ $product['categorie'] }}</td>
-                                    <td class="px-8 py-5">{{ $product['aantal'] }}</td>
+                                    <td class="px-8 py-5">{{ $product->streepjescode }}</td>
+                                    <td class="px-8 py-5">{{ $product->naam }}</td>
+                                    <td class="px-8 py-5">{{ $product->categorie }}</td>
+                                    <td class="px-8 py-5">{{ $product->aantal }}</td>
                                     <td class="px-8 py-5 text-center">
                                         <div class="flex flex-row gap-3 justify-center items-center">
                                             <a href="{{ route('voorraad.bewerk', $product['streepjescode']) }}"

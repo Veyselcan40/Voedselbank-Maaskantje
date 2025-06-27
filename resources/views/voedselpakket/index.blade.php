@@ -37,6 +37,7 @@
                         <th class="px-4 py-2 border-b text-left">Klant</th>
                         <th class="px-4 py-2 border-b text-left">Samenstelling</th>
                         <th class="px-4 py-2 border-b text-left">Uitgifte</th>
+                        <th class="px-4 py-2 border-b text-left">Producten</th>
                         <th class="px-4 py-2 border-b text-left">Acties</th>
                     </tr>
                 </thead>
@@ -50,9 +51,19 @@
                             <td class="px-4 py-2 border-b">{{ $pakket->datum_samenstelling }}</td>
                             <td class="px-4 py-2 border-b">{{ $pakket->datum_uitgifte ?? 'Nog niet uitgegeven' }}</td>
                             <td class="px-4 py-2 border-b">
+                                @if($pakket->producten && $pakket->producten->count())
+                                    <ul class="list-disc pl-4">
+                                        @foreach($pakket->producten as $product)
+                                            <li>{{ $product->naam }} ({{ $product->pivot->aantal }})</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <span class="text-gray-400">Geen producten</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2 border-b">
                                 <a href="{{ route('voedselpakketten.edit', $pakket->id) }}"
                                    class="text-blue-600 hover:underline mr-2">Wijzigen</a>
-
                                 <button
                                     type="button"
                                     onclick="openVerwijderModal({{ $pakket->id }})"

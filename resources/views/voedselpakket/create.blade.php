@@ -43,7 +43,9 @@
                     @foreach($producten as $product)
                         <div class="flex items-center gap-2">
                             <input type="checkbox" name="producten[{{ $loop->index }}][id]" value="{{ $product->id }}" id="product-{{ $product->id }}">
-                            <label for="product-{{ $product->id }}" class="flex-1">{{ $product->naam }} ({{ $product->aantal }} op voorraad)</label>
+                            <label for="product-{{ $product->id }}" class="flex-1">
+                                {{ $product->streepjescode }} - {{ $product->naam }} ({{ $product->categorie }}) - {{ $product->aantal }} op voorraad
+                            </label>
                             <input type="number" name="producten[{{ $loop->index }}][aantal]" min="1" max="{{ $product->aantal }}" placeholder="Aantal" class="w-24 border rounded px-2 py-1">
                         </div>
                     @endforeach
