@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('klantenoverzicht')" :active="request()->routeIs('klantenoverzicht')">
                         Klantenoverzicht
                     </x-nav-link>
+                    <x-nav-link :href="route('voedselpakket.index')" :active="request()->routeIs('voedselpakket.index')">
+                        Voedselpakketten
+                    </x-nav-link>
                 </div>
             </div>
 
