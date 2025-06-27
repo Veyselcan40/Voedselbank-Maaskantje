@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use App\Models\Klant;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,99 +19,58 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/klantenoverzicht', function (Request $request) {
-    $dummyKlanten = [
-        [
-            'naam' => 'Familie Jansen',
-            'adres' => 'Dorpsstraat 1, 1234 AB Plaats',
-            'telefoon' => '0612345678',
-            'email' => 'jansen@email.com',
-        ],
-        [
-            'naam' => 'Familie De Vries',
-            'adres' => 'Hoofdweg 10, 5678 CD Stad',
-            'telefoon' => '0687654321',
-            'email' => 'devries@email.com',
-        ],
-        [
-            'naam' => 'Familie Bakker',
-            'adres' => 'Kerklaan 5, 4321 EF Dorp',
-            'telefoon' => '0622334455',
-            'email' => 'bakker@email.com',
-        ],
-    ];
-    $sessionKlanten = $request->session()->get('extra_klanten', []);
-    $sessionKlanten = array_values($sessionKlanten); // Zorg voor juiste indexen
-    $klanten = array_merge($dummyKlanten, $sessionKlanten);
+Route::get('/klantenoverzicht', function () {
+    if (\App\Models\Klant::count() === 0) {
+        \App\Models\Klant::insert([
+            [
+                'naam' => 'Familie Jansen',
+                'adres' => 'Dorpsstraat 1, 1234 AB Plaats',
+                'telefoon' => '0612345678',
+                'email' => 'jansen@email.com',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'naam' => 'Familie De Vries',
+                'adres' => 'Hoofdweg 10, 5678 CD Stad',
+                'telefoon' => '0687654321',
+                'email' => 'devries@email.com',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'naam' => 'Familie Bakker',
+                'adres' => 'Kerklaan 5, 4321 EF Dorp',
+                'telefoon' => '0622334455',
+                'email' => 'bakker@email.com',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+    }
+    $klanten = Klant::all();
     return view('klantenoverzicht', compact('klanten'));
 })->name('klantenoverzicht');
 
-Route::get('/klanten/{index}/bewerken', function (Request $request, $index) {
-    $dummyKlanten = [
-        [
-            'naam' => 'Familie Jansen',
-            'adres' => 'Dorpsstraat 1, 1234 AB Plaats',
-            'telefoon' => '0612345678',
-            'email' => 'jansen@email.com',
-        ],
-        [
-            'naam' => 'Familie De Vries',
-            'adres' => 'Hoofdweg 10, 5678 CD Stad',
-            'telefoon' => '0687654321',
-            'email' => 'devries@email.com',
-        ],
-        [
-            'naam' => 'Familie Bakker',
-            'adres' => 'Kerklaan 5, 4321 EF Dorp',
-            'telefoon' => '0622334455',
-            'email' => 'bakker@email.com',
-        ],
-    ];
-    $sessionKlanten = $request->session()->get('extra_klanten', []);
-    $sessionKlanten = array_values($sessionKlanten);
-    $klanten = array_merge($dummyKlanten, $sessionKlanten);
-
-    if (!isset($klanten[$index])) {
-        abort(404);
-    }
-    $klant = $klanten[$index];
-    $isDummy = $index < count($dummyKlanten);
-    return view('klanten_bewerken', compact('klant', 'index', 'isDummy'));
+Route::get('/klanten/{id}/bewerken', function ($id) {
+    $klant = Klant::findOrFail($id);
+    return view('klanten_bewerken', compact('klant'));
 })->name('klanten.bewerken');
 
-Route::post('/klanten/{index}/bewerken', function (Request $request, $index) {
+Route::post('/klanten/{id}/bewerken', function (Request $request, $id) {
     $request->validate([
         'naam' => 'required|string|max:255',
         'adres' => 'required|string|max:255',
         'telefoon' => 'required|string|max:20',
         'email' => 'required|email|max:255',
     ]);
-    $dummyCount = 3;
-    if ($index < $dummyCount) {
-        // Dummy klanten kunnen niet echt gewijzigd worden, maar we simuleren het voor demo
-        // Optioneel: sla wijzigingen tijdelijk op in session (voor demo)
-        $dummyEdits = $request->session()->get('dummy_edits', []);
-        $dummyEdits[$index] = [
-            'naam' => $request->naam,
-            'adres' => $request->adres,
-            'telefoon' => $request->telefoon,
-            'email' => $request->email,
-        ];
-        $request->session()->put('dummy_edits', $dummyEdits);
-    } else {
-        $sessionKlanten = $request->session()->get('extra_klanten', []);
-        $sessionKlanten = array_values($sessionKlanten);
-        $sessionIndex = $index - $dummyCount;
-        if (isset($sessionKlanten[$sessionIndex])) {
-            $sessionKlanten[$sessionIndex] = [
-                'naam' => $request->naam,
-                'adres' => $request->adres,
-                'telefoon' => $request->telefoon,
-                'email' => $request->email,
-            ];
-            $request->session()->put('extra_klanten', $sessionKlanten);
-        }
-    }
+    $klant = Klant::findOrFail($id);
+    $klant->update([
+        'naam' => $request->naam,
+        'adres' => $request->adres,
+        'telefoon' => $request->telefoon,
+        'email' => $request->email,
+    ]);
     return redirect()->route('klantenoverzicht')->with('success', 'Klantgegevens succesvol gewijzigd.');
 })->name('klanten.bewerken.post');
 
@@ -125,16 +85,19 @@ Route::post('/klanten/nieuw', function (Request $request) {
         'telefoon' => 'required|string|max:20',
         'email' => 'required|email|max:255',
     ]);
-    $klant = [
+    Klant::create([
         'naam' => $request->naam,
         'adres' => $request->adres,
         'telefoon' => $request->telefoon,
         'email' => $request->email,
-    ];
-    $extraKlanten = $request->session()->get('extra_klanten', []);
-    $extraKlanten[] = $klant;
-    $request->session()->put('extra_klanten', $extraKlanten);
+    ]);
     return redirect()->route('klantenoverzicht')->with('success', 'Nieuwe klant succesvol geregistreerd.');
 })->name('klanten.nieuw.post');
+
+Route::delete('/klanten/{id}/verwijderen', function ($id) {
+    $klant = Klant::findOrFail($id);
+    $klant->delete();
+    return redirect()->route('klantenoverzicht')->with('success', 'Klant succesvol verwijderd.');
+})->name('klanten.verwijderen');
 
 require __DIR__.'/auth.php';

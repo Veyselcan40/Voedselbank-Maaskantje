@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div x-data="{ showModal: false, deleteAction: null }" class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -30,24 +30,20 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                                @php
-                                    $dummyEdits = session('dummy_edits', []);
-                                @endphp
-                                @foreach($klanten as $i => $klant)
-                                    @php
-                                        // Toon aangepaste dummy-klant als aanwezig
-                                        if (isset($dummyEdits[$i])) {
-                                            $klant = $dummyEdits[$i];
-                                        }
-                                    @endphp
+                                @foreach($klanten as $klant)
                                     <tr>
-                                        <td class="px-4 py-2">{{ $klant['naam'] }}</td>
-                                        <td class="px-4 py-2">{{ $klant['adres'] }}</td>
-                                        <td class="px-4 py-2">{{ $klant['telefoon'] }}</td>
-                                        <td class="px-4 py-2">{{ $klant['email'] }}</td>
+                                        <td class="px-4 py-2">{{ $klant->naam }}</td>
+                                        <td class="px-4 py-2">{{ $klant->adres }}</td>
+                                        <td class="px-4 py-2">{{ $klant->telefoon }}</td>
+                                        <td class="px-4 py-2">{{ $klant->email }}</td>
                                         <td class="px-4 py-2">
-                                            <a href="{{ route('klanten.bewerken', $i) }}" class="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">Bewerken</a>
-                                            <form action="#" method="POST" class="inline-block" onsubmit="return confirm('Weet je zeker dat je deze klant wilt verwijderen?');">
+                                            <a href="{{ route('klanten.bewerken', $klant->id) }}" class="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">Bewerken</a>
+                                            <form 
+                                                action="{{ route('klanten.verwijderen', $klant->id) }}" 
+                                                method="POST" 
+                                                class="inline-block delete-form"
+                                                @submit.prevent="showModal = true; deleteAction = $event.target;"
+                                            >
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Verwijderen</button>
@@ -58,9 +54,21 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- Modal -->
+                    <div x-show="showModal" style="background: rgba(0,0,0,0.5)" class="fixed inset-0 flex items-center justify-center z-50">
+                        <div class="bg-white rounded shadow-lg p-8 max-w-sm w-full text-center">
+                            <h2 class="text-lg font-semibold mb-4">Weet je zeker dat je de klant wilt verwijderen?</h2>
+                            <div class="flex justify-center gap-4">
+                                <button @click="showModal = false" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Annuleren</button>
+                                <button @click="deleteAction.submit(); showModal = false" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Verwijderen</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Einde Modal -->
                 </div>
             </div>
         </div>
     </div>
 </x-app-layout>
+
 
