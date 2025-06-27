@@ -36,7 +36,7 @@
                             <label for="email" class="block font-medium text-sm text-gray-700">E-mailadres</label>
                             <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded" required value="{{ old('email', $klant->email) }}">
                             @error('email')
-                                <div class="text-red-600 text-sm">Voer een geldig e-mailadres in</div>
+                                <div class="text-red-600 text-sm">Voer een geldig E-mailadres in</div>
                             @enderror
                         </div>
                         <div>
