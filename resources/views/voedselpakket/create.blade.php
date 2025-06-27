@@ -40,27 +40,21 @@
             <div>
                 <label class="block text-gray-700 mb-1">Producten uit voorraad:</label>
                 <div class="space-y-2">
-                    @forelse($producten as $product)
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox"
-                                   name="producten[{{ $loop->index }}][id]"
-                                   value="{{ $product->id }}"
-                                   id="product-{{ $product->id }}"
-                                   {{ $product->aantal < 1 ? 'disabled' : '' }}>
-                            <label for="product-{{ $product->id }}" class="flex-1">
-                                {{ $product->naam }} ({{ $product->aantal }} op voorraad)
-                            </label>
-                            <input type="number"
-                                   name="producten[{{ $loop->index }}][aantal]"
-                                   min="1"
-                                   max="{{ $product->aantal }}"
-                                   placeholder="Aantal"
-                                   class="w-24 border rounded px-2 py-1"
-                                   {{ $product->aantal < 1 ? 'disabled' : '' }}>
+                    @if($producten->isEmpty())
+                        <div class="text-red-600 font-semibold mb-2">
+                            Er zijn geen producten in voorraad. Maak eerst producten aan.
                         </div>
-                    @empty
-                        <div class="text-red-600">Er zijn geen producten op voorraad.</div>
-                    @endforelse
+                    @else
+                        @foreach($producten as $product)
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" name="producten[{{ $loop->index }}][id]" value="{{ $product->id }}" id="product-{{ $product->id }}">
+                                <label for="product-{{ $product->id }}" class="flex-1">
+                                    {{ $product->streepjescode }} - {{ $product->naam }} ({{ $product->categorie }}) - {{ $product->aantal }} op voorraad
+                                </label>
+                                <input type="number" name="producten[{{ $loop->index }}][aantal]" min="1" max="{{ $product->aantal }}" placeholder="Aantal" class="w-24 border rounded px-2 py-1">
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
 

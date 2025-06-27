@@ -12,15 +12,14 @@ class VoedselpakketController extends Controller
 {
     public function index()
     {
-        $voedselpakketten = Voedselpakket::with('klant')->paginate(10);
+        $voedselpakketten = Voedselpakket::with(['klant', 'producten'])->paginate(10);
         return view('voedselpakket.index', compact('voedselpakketten'));
     }
 
     public function create()
     {
         $klanten = Klant::all();
-        // Alleen producten met voorraad > 0 tonen
-        $producten = Product::where('aantal', '>', 0)->get();
+        $producten = \App\Models\Product::all(); // Zorg dat dit Eloquent models zijn
         return view('voedselpakket.create', compact('klanten', 'producten'));
     }
 
@@ -44,14 +43,19 @@ class VoedselpakketController extends Controller
         $data = $request->all();
         $data['nummer'] = $volgendNummer;
 
-        $pakket = \App\Models\Voedselpakket::create($data);
+        $pakket = Voedselpakket::create($data);
 
-        // Koppel producten aan pakket
+        // Koppel producten aan pakket en trek voorraad af
         if ($request->has('producten')) {
             $syncData = [];
             foreach ($request->input('producten') as $prod) {
                 if (!empty($prod['id']) && !empty($prod['aantal'])) {
-                    $syncData[$prod['id']] = ['aantal' => $prod['aantal']];
+                    $product = Product::find($prod['id']);
+                    if ($product && $product->aantal >= $prod['aantal']) {
+                        $product->aantal -= $prod['aantal'];
+                        $product->save();
+                        $syncData[$prod['id']] = ['aantal' => $prod['aantal']];
+                    }
                 }
             }
             $pakket->producten()->sync($syncData);
@@ -62,6 +66,7 @@ class VoedselpakketController extends Controller
 
     public function show(Voedselpakket $voedselpakket)
     {
+        $voedselpakket->load(['klant', 'producten']);
         return view('voedselpakket.show', compact('voedselpakket'));
     }
 

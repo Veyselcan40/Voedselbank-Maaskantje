@@ -59,25 +59,31 @@ Route::middleware('auth')->group(function () {
 
     Route::get('voorraad', function (\Illuminate\Http\Request $request) {
         $categorieen = ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
-        // Haal producten uit de database
-        $query = \App\Models\Product::query();
-        if ($request->filled('zoek_streepjescode')) {
-            $query->where('streepjescode', 'like', '%' . $request->input('zoek_streepjescode') . '%');
-        }
-        if ($request->filled('zoek_categorie')) {
-            $query->where('categorie', $request->input('zoek_categorie'));
-        }
-        $producten = $query->orderBy('streepjescode')->get()->toArray();
+        // Haal producten uit de database in plaats van uit de sessie
+        $producten = \App\Models\Product::all();
 
+        // Filteren
+        $zoekStreep = $request->input('zoek_streepjescode', '');
+        $zoekCategorie = $request->input('zoek_categorie', '');
+        if ($zoekStreep) {
+            $producten = $producten->filter(fn($p) => str_contains($p->streepjescode, $zoekStreep));
+        }
+        if ($zoekCategorie) {
+            $producten = $producten->filter(fn($p) => $p->categorie === $zoekCategorie);
+        }
+        // Sorteren
         $sort = $request->input('sort', 'streepjescode');
         $direction = $request->input('direction', 'asc');
-        // Sorteren in PHP indien gewenst (optioneel, want DB doet het al)
-        // usort($producten, function($a, $b) use ($sort, $direction) {
-        //     $res = $a[$sort] <=> $b[$sort];
-        //     return $direction === 'desc' ? -$res : $res;
-        // });
+        $producten = $producten->sortBy($sort, SORT_REGULAR, $direction === 'desc');
 
-        return view('voorraad', compact('producten', 'categorieen', 'sort', 'direction'));
+        return view('voorraad', [
+            'producten' => $producten,
+            'categorieen' => $categorieen,
+            'sort' => $sort,
+            'direction' => $direction,
+            'zoekStreep' => $zoekStreep,
+            'zoekCategorie' => $zoekCategorie,
+        ]);
     })->name('voorraad');
 
     Route::post('voorraad/toevoegen', function (\Illuminate\Http\Request $request) {

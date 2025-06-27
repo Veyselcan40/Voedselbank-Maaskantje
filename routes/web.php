@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LeverancierController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -25,12 +26,43 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/leverancier', [\App\Http\Controllers\LeverancierController::class, 'index'])->name('leverancier.index');
+    Route::get('/leverancier/create', [\App\Http\Controllers\LeverancierController::class, 'create'])->name('leverancier.create');
+    Route::post('/leverancier', [\App\Http\Controllers\LeverancierController::class, 'store'])->name('leverancier.store');
+    Route::get('/leverancier/{leverancier}/edit', [\App\Http\Controllers\LeverancierController::class, 'edit'])->name('leverancier.edit');
+    Route::put('/leverancier/{leverancier}', [\App\Http\Controllers\LeverancierController::class, 'update'])->name('leverancier.update');
+    Route::delete('/leverancier/{leverancier}', [\App\Http\Controllers\LeverancierController::class, 'destroy'])->name('leverancier.destroy');
 });
 
 Route::get('/klantenoverzicht', function () {
     $klanten = \App\Models\Klant::all();
     return view('klantenoverzicht', compact('klanten'));
 })->name('klantenoverzicht');
+
+Route::get('/klanten/{id}/bewerken', function ($id) {
+    $klant = Klant::findOrFail($id);
+    return view('klanten_bewerken', compact('klant'));
+})->name('klanten.bewerken');
+
+Route::post('/klanten/{id}/bewerken', function (Request $request, $id) {
+    $request->validate([
+        'naam' => 'required|string|max:255',
+        'adres' => 'required|string|max:255',
+        'telefoon' => [
+            'required',
+            'digits_between:10,12'
+        ],
+        'email' => 'required|email|max:255',
+    ]);
+    $klant = Klant::findOrFail($id);
+    $klant->update([
+        'naam' => $request->naam,
+        'adres' => $request->adres,
+        'telefoon' => $request->telefoon,
+        'email' => $request->email,
+    ]);
+    return redirect()->route('klantenoverzicht')->with('success', 'Klantgegevens succesvol gewijzigd.');
+})->name('klanten.bewerken.post');
 
 Route::get('/klanten/nieuw', function () {
     return view('klanten_nieuw');
@@ -41,8 +73,16 @@ Route::post('/klanten/nieuw', function (Request $request) {
         'naam' => 'required|string|max:255',
         'adres' => 'required|string|max:255',
         'telefoon' => 'required|string|max:20',
-        'email' => 'required|email|max:255',
+        'email' => [
+            'required',
+            'email',
+            'max:255',
+            'unique:klanten,email',
+        ],
+    ], [
+        'email.unique' => 'Een klant met dit e-mailadres bestaat al.',
     ]);
+
     // Sla klant direct op in de database
     \App\Models\Klant::create([
         'naam' => $request->naam,
@@ -52,5 +92,11 @@ Route::post('/klanten/nieuw', function (Request $request) {
     ]);
     return redirect()->route('klantenoverzicht')->with('success', 'Nieuwe klant succesvol geregistreerd.');
 })->name('klanten.nieuw.post');
+
+Route::delete('/klanten/{id}/verwijderen', function ($id) {
+    $klant = Klant::findOrFail($id);
+    $klant->delete();
+    return redirect()->route('klantenoverzicht')->with('success', 'Klant succesvol verwijderd.');
+})->name('klanten.verwijderen');
 
 require __DIR__.'/auth.php';

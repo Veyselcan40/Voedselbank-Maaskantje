@@ -15,6 +15,18 @@ class Product extends Model
         'aantal',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($product) {
+            if (empty($product->streepjescode)) {
+                do {
+                    $barcode = str_pad(strval(random_int(0, 9999999999999)), 13, '0', STR_PAD_LEFT);
+                } while (self::where('streepjescode', $barcode)->exists());
+                $product->streepjescode = $barcode;
+            }
+        });
+    }
+
     // Relatie met voedselpakketten via pivot-tabel
     public function voedselpakketten()
     {

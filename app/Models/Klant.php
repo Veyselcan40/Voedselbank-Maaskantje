@@ -9,10 +9,11 @@ class Klant extends Model
 {
     use HasFactory;
 
-    protected $table = 'klanten'; // <-- fix hier
+    protected $table = 'klanten';
 
     protected $fillable = [
         'naam',
+        'adres',
         'telefoon',
         'email',
         'postcode',

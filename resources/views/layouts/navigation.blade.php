@@ -25,11 +25,15 @@
                     <x-nav-link :href="route('voorraad')" :active="request()->routeIs('voorraad')">
                         {{ __('Voorraadoverzicht') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('leverancier.index')" :active="request()->routeIs('leverancier.index')">
+                        {{ __('Leverancier') }}
+                    </x-nav-link>
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                @auth
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -60,6 +64,7 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+                @endauth
             </div>
 
             <!-- Hamburger -->
@@ -80,21 +85,28 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-
             <x-responsive-nav-link :href="route('klantenoverzicht')" :active="request()->routeIs('klantenoverzicht')">
                 Klantenoverzicht
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('voedselpakketten.index')" :active="request()->routeIs('voedselpakketten.index')">
+                Voedselpakketten
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('voorraad')" :active="request()->routeIs('voorraad')">
                 {{ __('Voorraadoverzicht') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('leverancier.index')" :active="request()->routeIs('leverancier.index')">
+                {{ __('Leverancier') }}
             </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
+            @auth
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
+            @endauth
 
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">

@@ -130,14 +130,10 @@
                                         <input type="text"
                                             name="streepjescode"
                                             id="streepjescode"
-                                            value="{{ old('streepjescode') }}"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
-                                            required
-                                            minlength="13"
-                                            maxlength="13"
-                                            pattern="\d{13}"
-                                            inputmode="numeric"
-                                            placeholder="13 cijfers"
+                                            value=""
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition bg-gray-100"
+                                            readonly
+                                            placeholder="Wordt automatisch gegenereerd"
                                         >
                                     </div>
                                     <div>
@@ -225,7 +221,7 @@
                         <div class="w-full bg-yellow-100 text-yellow-900 rounded-lg shadow p-6 text-center text-lg font-semibold mb-6">
                             Geen producten gevonden met deze streepjescode.
                         </div>
-                    @elseif(empty($producten) || count($producten) === 0)
+                    @elseif($producten->isEmpty())
                         <div class="w-full bg-yellow-100 text-yellow-900 rounded-lg shadow p-6 text-center text-lg font-semibold mb-6">
                             Er zijn momenteel geen producten in de voorraad beschikbaar.
                         </div>
@@ -241,31 +237,31 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($producten as $product)
-                            <tr class="bg-white hover:bg-blue-50 transition border-b border-gray-100">
-                                <td class="px-8 py-5">{{ is_array($product) ? $product['streepjescode'] : $product->streepjescode }}</td>
-                                <td class="px-8 py-5">{{ is_array($product) ? $product['naam'] : $product->naam }}</td>
-                                <td class="px-8 py-5">{{ is_array($product) ? $product['categorie'] : $product->categorie }}</td>
-                                <td class="px-8 py-5">{{ is_array($product) ? $product['aantal'] : $product->aantal }}</td>
-                                <td class="px-8 py-5 text-center">
-                                    <div class="flex flex-row gap-3 justify-center items-center">
-                                        <a href="{{ route('voorraad.bewerk', is_array($product) ? $product['streepjescode'] : $product->streepjescode) }}"
-                                           class="px-5 py-2 bg-blue-500 text-white rounded-md font-semibold text-base hover:bg-blue-600 transition shadow-sm">
-                                            Bewerken
-                                        </a>
-                                        <button
-                                            onclick="showDeleteModal('{{ is_array($product) ? $product['streepjescode'] : $product->streepjescode }}')"
-                                            class="px-5 py-2 bg-red-500 text-white rounded-md font-semibold text-base hover:bg-red-600 transition shadow-sm"
-                                            type="button"
-                                        >
-                                            Verwijderen
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                @foreach($producten as $product)
+                                <tr class="bg-white hover:bg-blue-50 transition border-b border-gray-100">
+                                    <td class="px-8 py-5">{{ $product->streepjescode }}</td>
+                                    <td class="px-8 py-5">{{ $product->naam }}</td>
+                                    <td class="px-8 py-5">{{ $product->categorie }}</td>
+                                    <td class="px-8 py-5">{{ $product->aantal }}</td>
+                                    <td class="px-8 py-5 text-center">
+                                        <div class="flex flex-row gap-3 justify-center items-center">
+                                            <a href="{{ route('voorraad.bewerk', $product['streepjescode']) }}"
+                                               class="px-5 py-2 bg-blue-500 text-white rounded-md font-semibold text-base hover:bg-blue-600 transition shadow-sm">
+                                                Bewerken
+                                            </a>
+                                            <button
+                                                onclick="showDeleteModal('{{ $product['streepjescode'] }}')"
+                                                class="px-5 py-2 bg-red-500 text-white rounded-md font-semibold text-base hover:bg-red-600 transition shadow-sm"
+                                                type="button"
+                                            >
+                                                Verwijderen
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     @endif
                     </div>
 
