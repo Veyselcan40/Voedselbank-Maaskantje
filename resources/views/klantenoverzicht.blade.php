@@ -30,14 +30,23 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                                @foreach($klanten as $klant)
+                                @php
+                                    $dummyEdits = session('dummy_edits', []);
+                                @endphp
+                                @foreach($klanten as $i => $klant)
+                                    @php
+                                        // Toon aangepaste dummy-klant als aanwezig
+                                        if (isset($dummyEdits[$i])) {
+                                            $klant = $dummyEdits[$i];
+                                        }
+                                    @endphp
                                     <tr>
                                         <td class="px-4 py-2">{{ $klant['naam'] }}</td>
                                         <td class="px-4 py-2">{{ $klant['adres'] }}</td>
                                         <td class="px-4 py-2">{{ $klant['telefoon'] }}</td>
                                         <td class="px-4 py-2">{{ $klant['email'] }}</td>
                                         <td class="px-4 py-2">
-                                            <a href="#" class="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">Bewerken</a>
+                                            <a href="{{ route('klanten.bewerken', $i) }}" class="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">Bewerken</a>
                                             <form action="#" method="POST" class="inline-block" onsubmit="return confirm('Weet je zeker dat je deze klant wilt verwijderen?');">
                                                 @csrf
                                                 @method('DELETE')
