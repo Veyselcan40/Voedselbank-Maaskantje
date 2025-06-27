@@ -79,7 +79,12 @@ class LeverancierController extends Controller
     public function update(Request $request, Leverancier $leverancier)
     {
         $validated = $request->validate([
-            'Bedrijfsnaam' => 'required|string|max:255',
+            'Bedrijfsnaam' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:leveranciers,Bedrijfsnaam,' . $leverancier->id,
+            ],
             'Adres' => 'required|string|max:255',
             'Contactpersoon' => 'required|string|max:255',
             'Email' => [
@@ -96,6 +101,7 @@ class LeverancierController extends Controller
             'EerstvolgendeLevering' => 'nullable|date',
             'Leverancierstype' => 'required|in:groothandel,supermarkt,boeren',
         ], [
+            'Bedrijfsnaam.unique' => 'Deze bedrijfsnaam bestaat al.',
             'Email.email' => 'Voer een geldig e-mailadres in.',
             'Email.unique' => 'Een leverancier met dit e-mailadres bestaat al.',
             'Telefoon.regex' => 'Voer een telefoonnummer in van minimaal 8 en maximaal 12 cijfers.',
