@@ -39,37 +39,45 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($leveranciers as $leverancier)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Bedrijfsnaam }}</td>
-                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Adres }}</td>
-                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Contactpersoon }}</td>
-                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Email }}</td>
-                        <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Telefoon }}</td>
-                        <td class="px-4 py-2 text-sm text-black">
-                            @if($leverancier->EerstvolgendeLevering)
-                                {{ \Carbon\Carbon::parse($leverancier->EerstvolgendeLevering)->format('d-m-Y H:i') }}
-                            @else
-                                <span class="text-gray-400">Geen gepland</span>
-                            @endif
-                        </td>
-                        <td class="px-4 py-2 text-sm">
-                            <div class="flex flex-row gap-4">
-                                <a href="{{ route('leverancier.edit', $leverancier->id) }}"
-                                   class="text-blue-600 hover:underline hover:text-blue-800 text-sm font-semibold transition">
-                                    Bewerken
-                                </a>
-                                <button
-                                    type="button"
-                                    class="text-red-600 hover:underline hover:text-red-800 text-sm font-semibold transition bg-transparent border-0 p-0 m-0 align-baseline"
-                                    onclick="openDeleteModal({{ $leverancier->id }})"
-                                >
-                                    Verwijderen
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
+                    @if($leveranciers->count() === 0)
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500 text-base">
+                                Er zijn nog geen leveranciers beschikbaar.
+                            </td>
+                        </tr>
+                    @else
+                        @foreach($leveranciers as $leverancier)
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Bedrijfsnaam }}</td>
+                            <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Adres }}</td>
+                            <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Contactpersoon }}</td>
+                            <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Email }}</td>
+                            <td class="px-4 py-2 text-sm text-black">{{ $leverancier->Telefoon }}</td>
+                            <td class="px-4 py-2 text-sm text-black">
+                                @if($leverancier->EerstvolgendeLevering)
+                                    {{ \Carbon\Carbon::parse($leverancier->EerstvolgendeLevering)->format('d-m-Y H:i') }}
+                                @else
+                                    <span class="text-gray-400">Geen gepland</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2 text-sm">
+                                <div class="flex flex-row gap-4">
+                                    <a href="{{ route('leverancier.edit', $leverancier->id) }}"
+                                       class="text-blue-600 hover:underline hover:text-blue-800 text-sm font-semibold transition">
+                                        Bewerken
+                                    </a>
+                                    <button
+                                        type="button"
+                                        class="text-red-600 hover:underline hover:text-red-800 text-sm font-semibold transition bg-transparent border-0 p-0 m-0 align-baseline"
+                                        onclick="openDeleteModal({{ $leverancier->id }})"
+                                    >
+                                        Verwijderen
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
