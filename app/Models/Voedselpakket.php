@@ -12,6 +12,7 @@ class Voedselpakket extends Model
         'klant_id',
         'datum_samenstelling',
         'datum_uitgifte',
+        'nummer',
     ];
 
     // Relatie met Klant

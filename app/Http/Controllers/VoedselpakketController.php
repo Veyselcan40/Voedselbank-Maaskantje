@@ -24,12 +24,21 @@ class VoedselpakketController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'klant_id' => 'required|exists:klanten,id',
-            'datum_samenstelling' => 'required|date',
+            'klant_id' => 'nullable|exists:klanten,id',
+            'datum_samenstelling' => 'required|date|after_or_equal:today',
             'datum_uitgifte' => 'nullable|date',
+        ], [
+            'datum_samenstelling.after_or_equal' => 'De datum van samenstelling mag niet vóór vandaag zijn.',
         ]);
 
-        Voedselpakket::create($request->all());
+        // Bepaal het volgende nummer
+        $maxNummer = \App\Models\Voedselpakket::max('nummer');
+        $volgendNummer = $maxNummer ? $maxNummer + 1 : 1;
+
+        $data = $request->all();
+        $data['nummer'] = $volgendNummer;
+
+        \App\Models\Voedselpakket::create($data);
 
         return redirect()->route('voedselpakketten.index')->with('success', 'Voedselpakket toegevoegd.');
     }
@@ -48,21 +57,21 @@ class VoedselpakketController extends Controller
     public function update(Request $request, Voedselpakket $voedselpakket)
     {
         $request->validate([
-            'klant_id' => 'required|exists:klanten,id',
-            'datum_samenstelling' => 'required|date',
+            'klant_id' => 'nullable|exists:klanten,id',
+            'datum_samenstelling' => 'required|date|after_or_equal:today',
             'datum_uitgifte' => 'nullable|date',
             // Voeg hier validatie toe voor producten indien van toepassing
         ], [
-            'klant_id.required' => 'Een voedselpakket moet altijd gekoppeld zijn aan een klant.',
-            'klant_id.exists' => 'De geselecteerde klant bestaat niet.',
+            'datum_samenstelling.after_or_equal' => 'De datum van samenstelling mag niet vóór vandaag zijn.',
         ]);
 
-        // Placeholder: voorraad aanpassen als producten zijn gewijzigd
-        // if ($productenGewijzigd) {
-        //     Pas de voorraad aan...
-        // }
+        $data = $request->all();
+        // Als klant_id leeg is, zet het expliciet op null
+        if (!array_key_exists('klant_id', $data) || $data['klant_id'] === '' || $data['klant_id'] === null) {
+            $data['klant_id'] = null;
+        }
 
-        $voedselpakket->update($request->all());
+        $voedselpakket->update($data);
 
         return redirect()->route('voedselpakketten.index')->with('success', 'Voedselpakket bijgewerkt.');
     }
@@ -73,3 +82,9 @@ class VoedselpakketController extends Controller
         return redirect()->route('voedselpakketten.index')->with('success', 'Voedselpakket verwijderd.');
     }
 }
+        
+
+       
+
+
+
