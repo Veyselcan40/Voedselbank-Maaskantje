@@ -57,21 +57,41 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-    Route::get('voorraad', function () {
-        // Haal producten op uit database of array
+    Route::get('voorraad', function (\Illuminate\Http\Request $request) {
+        // Voorbeelddata, in echte app uit database
+        $categorieen = ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
+        $sort = $request->input('sort', 'streepjescode');
+        $direction = $request->input('direction', 'asc');
+        $zoekStreep = $request->input('zoek_streepjescode', '');
+        $zoekCategorie = $request->input('zoek_categorie', '');
+
         $producten = session('producten', [
-            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80],
-            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45],
+            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
         ]);
-        return view('voorraad', compact('producten'));
+
+        // Filteren
+        if ($zoekStreep) {
+            $producten = array_filter($producten, fn($p) => str_contains($p['streepjescode'], $zoekStreep));
+        }
+        if ($zoekCategorie) {
+            $producten = array_filter($producten, fn($p) => $p['categorie'] === $zoekCategorie);
+        }
+        // Sorteren
+        usort($producten, function($a, $b) use ($sort, $direction) {
+            $res = $a[$sort] <=> $b[$sort];
+            return $direction === 'desc' ? -$res : $res;
+        });
+
+        return view('voorraad', compact('producten', 'categorieen', 'sort', 'direction', 'zoekStreep', 'zoekCategorie'));
     })->name('voorraad');
 
     Route::post('voorraad/toevoegen', function (\Illuminate\Http\Request $request) {
         $producten = session('producten', [
-            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80],
-            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45],
+            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
         ]);
 
         $validated = $request->validate([
@@ -97,9 +117,23 @@ Route::middleware('auth')->group(function () {
             'naam' => $validated['naam'],
             'categorie' => $validated['categorie'],
             'aantal' => $validated['aantal'],
+            'verwijderbaar' => true,
         ];
         session(['producten' => $producten]);
 
         return redirect()->route('voorraad')->with('success', 'Product succesvol toegevoegd.');
     })->name('voorraad.toevoegen');
+
+    // Functies voor bewerken en verwijderen (voorraadbeheer)
+    Route::get('voorraad/bewerk/{streepjescode}', function ($streepjescode) {
+        // Hier zou je het product ophalen en een bewerk-formulier tonen
+        // Voor nu: redirect terug met een melding
+        return redirect()->route('voorraad')->with('error', 'Bewerken van producten is nog niet geïmplementeerd.');
+    })->name('voorraad.bewerk');
+
+    Route::delete('voorraad/verwijder/{streepjescode}', function ($streepjescode) {
+        // Hier zou je het product verwijderen als het mag
+        // Voor nu: redirect terug met een melding
+        return redirect()->route('voorraad')->with('error', 'Verwijderen van producten is nog niet geïmplementeerd.');
+    })->name('voorraad.verwijder');
 });
