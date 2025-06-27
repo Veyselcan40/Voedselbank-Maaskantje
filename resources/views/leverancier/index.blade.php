@@ -8,10 +8,15 @@
     <!-- Extra ruimte tussen de balk en de container -->
     <div class="h-6"></div>
     <div class="max-w-7xl mx-auto px-6 py-8 bg-white rounded-lg shadow">
+        @if(session('success'))
+            <div class="mb-6 px-4 py-3 rounded bg-green-100 text-green-800 border border-green-200">
+                {{ session('success') }}
+            </div>
+        @endif
         <div class="flex items-center justify-between mb-6">
             <p class="text-base font-semibold text-gray-900 tracking-tight">Overzicht van alle leveranciers</p>
             <a href="{{ route('leverancier.create') }}"
-                class="inline-block px-4 py-2 bg-green-500 text-white text-sm font-medium rounded hover:bg-green-600 transition">
+               class="text-green-600 hover:underline hover:text-green-800 text-sm font-semibold transition">
                 Leverancier toevoegen
             </a>
         </div>
@@ -49,9 +54,19 @@
                             @endif
                         </td>
                         <td class="px-4 py-2 text-sm">
-                            <div class="flex flex-row gap-2">
-                                <a href="{{ route('leverancier.edit', $leverancier->id) }}" class="px-5 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">Bewerken</a>
-                                <a href="#" class="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm">Verwijderen</a>
+                            <div class="flex flex-row gap-4">
+                                <a href="{{ route('leverancier.edit', $leverancier->id) }}"
+                                   class="text-blue-600 hover:underline hover:text-blue-800 text-sm font-semibold transition">
+                                    Bewerken
+                                </a>
+                                <form method="POST" action="{{ route('leverancier.destroy', $leverancier->id) }}" onsubmit="return confirm('Weet je zeker dat je deze leverancier wilt verwijderen?');" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="text-red-600 hover:underline hover:text-red-800 text-sm font-semibold transition bg-transparent border-0 p-0 m-0 align-baseline">
+                                        Verwijderen
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -59,5 +74,29 @@
                 </tbody>
             </table>
         </div>
+        <div class="mt-6 flex justify-center">
+            <nav class="flex space-x-1" role="navigation" aria-label="Pagination">
+                @if ($leveranciers->onFirstPage())
+                    <span class="px-3 py-2 bg-gray-100 text-gray-400 border border-gray-200 rounded cursor-default">&laquo;</span>
+                @else
+                    <a href="{{ $leveranciers->previousPageUrl() }}" class="px-3 py-2 bg-white text-gray-700 border border-gray-200 rounded hover:bg-gray-50">&laquo;</a>
+                @endif
+
+                @foreach ($leveranciers->getUrlRange(1, $leveranciers->lastPage()) as $page => $url)
+                    @if ($page == $leveranciers->currentPage())
+                        <span class="px-3 py-2 bg-indigo-600 text-white border border-indigo-600 rounded font-semibold">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}" class="px-3 py-2 bg-white text-gray-700 border border-gray-200 rounded hover:bg-gray-50">{{ $page }}</a>
+                    @endif
+                @endforeach
+
+                @if ($leveranciers->hasMorePages())
+                    <a href="{{ $leveranciers->nextPageUrl() }}" class="px-3 py-2 bg-white text-gray-700 border border-gray-200 rounded hover:bg-gray-50">&raquo;</a>
+                @else
+                    <span class="px-3 py-2 bg-gray-100 text-gray-400 border border-gray-200 rounded cursor-default">&raquo;</span>
+                @endif
+            </nav>
+        </div>
     </div>
 </x-app-layout>
+

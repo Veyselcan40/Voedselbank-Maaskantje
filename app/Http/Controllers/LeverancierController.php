@@ -13,7 +13,7 @@ class LeverancierController extends Controller
     public function index()
     {
         try {
-            $leveranciers = Leverancier::all();
+            $leveranciers = Leverancier::paginate(6);
             return view('leverancier.index', compact('leveranciers'));
         } catch (\Exception $e) {
             return view('leverancier.index')->withErrors('Op dit moment kunnen de leveranciersgegevens niet worden geladen. Probeer het later opnieuw.');
@@ -84,8 +84,9 @@ class LeverancierController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Leverancier $leverancier)
     {
-        //
+        $leverancier->delete();
+        return redirect()->route('leverancier.index')->with('success', 'Leverancier succesvol verwijderd.');
     }
 }
