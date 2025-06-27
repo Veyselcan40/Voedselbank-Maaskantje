@@ -97,7 +97,10 @@
             }
             document.getElementById('modal-verwijder-btn').onclick = function() {
                 if (currentVerwijderId) {
-                    document.getElementById('verwijder-form-' + currentVerwijderId).submit();
+                    var form = document.getElementById('verwijder-form-' + currentVerwijderId);
+                    if (form) {
+                        form.submit();
+                    }
                 }
             };
             document.addEventListener('keydown', function(e) {

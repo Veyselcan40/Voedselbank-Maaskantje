@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Voedselpakket;
 use App\Models\Klant;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 
@@ -18,7 +19,8 @@ class VoedselpakketController extends Controller
     public function create()
     {
         $klanten = Klant::all(); // haalt alle klanten uit de database
-        return view('voedselpakket.create', compact('klanten'));
+        $producten = Product::all(); // alle producten uit voorraad
+        return view('voedselpakket.create', compact('klanten', 'producten'));
     }
 
     public function store(Request $request)
@@ -27,6 +29,9 @@ class VoedselpakketController extends Controller
             'klant_id' => 'nullable|exists:klanten,id',
             'datum_samenstelling' => 'required|date|after_or_equal:today',
             'datum_uitgifte' => 'nullable|date',
+            'producten' => 'nullable|array',
+            'producten.*.id' => 'exists:producten,id',
+            'producten.*.aantal' => 'nullable|integer|min:1',
         ], [
             'datum_samenstelling.after_or_equal' => 'De datum van samenstelling mag niet vóór vandaag zijn.',
         ]);
@@ -38,7 +43,18 @@ class VoedselpakketController extends Controller
         $data = $request->all();
         $data['nummer'] = $volgendNummer;
 
-        \App\Models\Voedselpakket::create($data);
+        $pakket = \App\Models\Voedselpakket::create($data);
+
+        // Koppel producten aan pakket
+        if ($request->has('producten')) {
+            $syncData = [];
+            foreach ($request->input('producten') as $prod) {
+                if (!empty($prod['id']) && !empty($prod['aantal'])) {
+                    $syncData[$prod['id']] = ['aantal' => $prod['aantal']];
+                }
+            }
+            $pakket->producten()->sync($syncData);
+        }
 
         return redirect()->route('voedselpakketten.index')->with('success', 'Voedselpakket toegevoegd.');
     }
@@ -51,7 +67,9 @@ class VoedselpakketController extends Controller
     public function edit(Voedselpakket $voedselpakket)
     {
         $klanten = Klant::all(); // haalt alle klanten uit de database
-        return view('voedselpakket.edit', compact('voedselpakket', 'klanten'));
+        $producten = Product::all();
+        $geselecteerdeProducten = $voedselpakket->producten()->pluck('voedselpakket_product.aantal', 'producten.id')->toArray();
+        return view('voedselpakket.edit', compact('voedselpakket', 'klanten', 'producten', 'geselecteerdeProducten'));
     }
 
     public function update(Request $request, Voedselpakket $voedselpakket)
@@ -60,18 +78,32 @@ class VoedselpakketController extends Controller
             'klant_id' => 'nullable|exists:klanten,id',
             'datum_samenstelling' => 'required|date|after_or_equal:today',
             'datum_uitgifte' => 'nullable|date',
-            // Voeg hier validatie toe voor producten indien van toepassing
+            'producten' => 'nullable|array',
+            'producten.*.id' => 'exists:producten,id',
+            'producten.*.aantal' => 'nullable|integer|min:1',
         ], [
             'datum_samenstelling.after_or_equal' => 'De datum van samenstelling mag niet vóór vandaag zijn.',
         ]);
 
         $data = $request->all();
-        // Als klant_id leeg is, zet het expliciet op null
         if (!array_key_exists('klant_id', $data) || $data['klant_id'] === '' || $data['klant_id'] === null) {
             $data['klant_id'] = null;
         }
 
         $voedselpakket->update($data);
+
+        // Koppel producten aan pakket
+        if ($request->has('producten')) {
+            $syncData = [];
+            foreach ($request->input('producten') as $prod) {
+                if (!empty($prod['id']) && !empty($prod['aantal'])) {
+                    $syncData[$prod['id']] = ['aantal' => $prod['aantal']];
+                }
+            }
+            $voedselpakket->producten()->sync($syncData);
+        } else {
+            $voedselpakket->producten()->detach();
+        }
 
         return redirect()->route('voedselpakketten.index')->with('success', 'Voedselpakket bijgewerkt.');
     }
@@ -82,9 +114,9 @@ class VoedselpakketController extends Controller
         return redirect()->route('voedselpakketten.index')->with('success', 'Voedselpakket verwijderd.');
     }
 }
-        
 
-       
+
+
 
 
 

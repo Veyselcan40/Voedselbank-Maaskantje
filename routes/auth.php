@@ -210,12 +210,31 @@ Route::middleware('auth')->group(function () {
             ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
         ]);
 
+        // Simuleer voedselpakket-producten relatie (in echte app: pivot-tabel)
+        // Voorbeeld: [['pakket_id'=>1, 'streepjescode'=>'8712345678901'], ...]
+        $voedselpakket_producten = session('voedselpakket_producten', [
+            ['pakket_id' => 1, 'streepjescode' => '8712345678901'],
+            // Voeg meer toe indien gewenst
+        ]);
+
+        // Controle: zit het product in een voedselpakket?
+        $zitInPakket = false;
+        foreach ($voedselpakket_producten as $relatie) {
+            if ($relatie['streepjescode'] === $streepjescode) {
+                $zitInPakket = true;
+                break;
+            }
+        }
+        if ($zitInPakket) {
+            // Foutmelding tonen, product blijft zichtbaar
+            return redirect()->route('voorraad')->with('error', 'Product kan niet verwijderd worden.');
+        }
+
         // Zoek het product
         $gevonden = false;
         foreach ($producten as $key => $product) {
             if ($product['streepjescode'] === $streepjescode) {
                 $gevonden = true;
-                // Altijd verwijderbaar
                 unset($producten[$key]);
                 session(['producten' => array_values($producten)]);
                 return redirect()->route('voorraad')->with('success', 'Product succesvol verwijderd.');
@@ -224,4 +243,4 @@ Route::middleware('auth')->group(function () {
         // Product niet gevonden
         return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
     })->name('voorraad.verwijder');
-}); 
+});

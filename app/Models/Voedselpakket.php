@@ -20,4 +20,11 @@ class Voedselpakket extends Model
     {
         return $this->belongsTo(Klant::class);
     }
+
+    // Relatie met producten (voorraad) via pivot-tabel
+    public function producten()
+    {
+        return $this->belongsToMany(\App\Models\Product::class, 'voedselpakket_product', 'voedselpakket_id', 'product_id')
+            ->withPivot('aantal');
+    }
 }

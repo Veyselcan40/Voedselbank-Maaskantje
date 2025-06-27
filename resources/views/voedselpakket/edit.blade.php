@@ -42,13 +42,22 @@
                     <input type="date" name="datum_uitgifte" value="{{ $voedselpakket->datum_uitgifte }}" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
                 </div>
 
-                {{-- Placeholder voor producten-selectie indien van toepassing --}}
-                {{-- <div>
-                    <label class="block text-gray-700 mb-1">Producten:</label>
-                    <select name="producten[]" multiple class="w-full border border-gray-300 rounded px-3 py-2">
-                        ...
-                    </select>
-                </div> --}}
+                <div>
+                    <label class="block text-gray-700 mb-1">Producten uit voorraad:</label>
+                    <div class="space-y-2">
+                        @foreach($producten as $product)
+                            @php
+                                $checked = isset($geselecteerdeProducten[$product->id]);
+                                $aantal = $checked ? $geselecteerdeProducten[$product->id] : '';
+                            @endphp
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" name="producten[{{ $loop->index }}][id]" value="{{ $product->id }}" id="product-{{ $product->id }}" {{ $checked ? 'checked' : '' }}>
+                                <label for="product-{{ $product->id }}" class="flex-1">{{ $product->naam }} ({{ $product->aantal }} op voorraad)</label>
+                                <input type="number" name="producten[{{ $loop->index }}][aantal]" min="1" max="{{ $product->aantal }}" placeholder="Aantal" class="w-24 border rounded px-2 py-1" value="{{ $aantal }}">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
 
                 <div class="flex justify-center gap-4">
                     <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition font-semibold">
@@ -59,7 +68,6 @@
                     </a>
                 </div>
             </form>
-            {{-- Verwijderen knop en bevestigingsdiv zijn verwijderd --}}
         </div>
     </div>
 </x-app-layout>
