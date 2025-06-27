@@ -12,7 +12,7 @@ class CreateKlantenTable extends Migration
             Schema::create('klanten', function (Blueprint $table) {
                 $table->id();
                 $table->string('naam');
-                $table->string('adres')->default(''); // <-- voeg default waarde toe
+                $table->string('adres')->default(''); // <-- default waarde zodat adres niet verplicht is
                 $table->string('telefoon')->nullable();
                 $table->string('email')->nullable();
                 $table->timestamps();

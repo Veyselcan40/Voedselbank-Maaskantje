@@ -25,6 +25,9 @@
                     <x-nav-link :href="route('voorraad')" :active="request()->routeIs('voorraad')">
                         {{ __('Voorraadoverzicht') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('leverancier.index')" :active="request()->routeIs('leverancier.index')">
+                        {{ __('Leverancier') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -82,12 +85,17 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-
             <x-responsive-nav-link :href="route('klantenoverzicht')" :active="request()->routeIs('klantenoverzicht')">
                 Klantenoverzicht
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('voedselpakketten.index')" :active="request()->routeIs('voedselpakketten.index')">
+                Voedselpakketten
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('voorraad')" :active="request()->routeIs('voorraad')">
                 {{ __('Voorraadoverzicht') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('leverancier.index')" :active="request()->routeIs('leverancier.index')">
+                {{ __('Leverancier') }}
             </x-responsive-nav-link>
         </div>
 
