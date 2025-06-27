@@ -18,8 +18,9 @@ class VoedselpakketController extends Controller
 
     public function create()
     {
-        $klanten = Klant::all(); // haalt alle klanten uit de database
-        $producten = Product::all(); // alle producten uit voorraad
+        $klanten = Klant::all();
+        // Alleen producten met voorraad > 0 tonen
+        $producten = Product::where('aantal', '>', 0)->get();
         return view('voedselpakket.create', compact('klanten', 'producten'));
     }
 

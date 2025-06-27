@@ -43,15 +43,11 @@
                 @endif
 
                 @php
+                    // $producten is nu een array van arrays of objecten uit de database
                     $showForm = old('_show_form') || $errors->any() || request('_show_form');
                     $showEditForm = isset($showEditForm) && $showEditForm;
                     $bewerkProduct = old('bewerkProduct') ?? ($bewerkProduct ?? null);
                     $categorieen = $categorieen ?? ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
-                    $producten = $producten ?? [
-                        ['streepjescode' => '1234567890123', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120],
-                        ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80],
-                        ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45],
-                    ];
                 @endphp
 
                 @if($showEditForm && isset($bewerkProduct))
@@ -245,31 +241,31 @@
                             </tr>
                         </thead>
                         <tbody>
-                                @foreach($producten as $product)
-                                <tr class="bg-white hover:bg-blue-50 transition border-b border-gray-100">
-                                    <td class="px-8 py-5">{{ $product['streepjescode'] }}</td>
-                                    <td class="px-8 py-5">{{ $product['naam'] }}</td>
-                                    <td class="px-8 py-5">{{ $product['categorie'] }}</td>
-                                    <td class="px-8 py-5">{{ $product['aantal'] }}</td>
-                                    <td class="px-8 py-5 text-center">
-                                        <div class="flex flex-row gap-3 justify-center items-center">
-                                            <a href="{{ route('voorraad.bewerk', $product['streepjescode']) }}"
-                                               class="px-5 py-2 bg-blue-500 text-white rounded-md font-semibold text-base hover:bg-blue-600 transition shadow-sm">
-                                                Bewerken
-                                            </a>
-                                            <button
-                                                onclick="showDeleteModal('{{ $product['streepjescode'] }}')"
-                                                class="px-5 py-2 bg-red-500 text-white rounded-md font-semibold text-base hover:bg-red-600 transition shadow-sm"
-                                                type="button"
-                                            >
-                                                Verwijderen
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                            @foreach($producten as $product)
+                            <tr class="bg-white hover:bg-blue-50 transition border-b border-gray-100">
+                                <td class="px-8 py-5">{{ is_array($product) ? $product['streepjescode'] : $product->streepjescode }}</td>
+                                <td class="px-8 py-5">{{ is_array($product) ? $product['naam'] : $product->naam }}</td>
+                                <td class="px-8 py-5">{{ is_array($product) ? $product['categorie'] : $product->categorie }}</td>
+                                <td class="px-8 py-5">{{ is_array($product) ? $product['aantal'] : $product->aantal }}</td>
+                                <td class="px-8 py-5 text-center">
+                                    <div class="flex flex-row gap-3 justify-center items-center">
+                                        <a href="{{ route('voorraad.bewerk', is_array($product) ? $product['streepjescode'] : $product->streepjescode) }}"
+                                           class="px-5 py-2 bg-blue-500 text-white rounded-md font-semibold text-base hover:bg-blue-600 transition shadow-sm">
+                                            Bewerken
+                                        </a>
+                                        <button
+                                            onclick="showDeleteModal('{{ is_array($product) ? $product['streepjescode'] : $product->streepjescode }}')"
+                                            class="px-5 py-2 bg-red-500 text-white rounded-md font-semibold text-base hover:bg-red-600 transition shadow-sm"
+                                            type="button"
+                                        >
+                                            Verwijderen
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                     @endif
                     </div>
 

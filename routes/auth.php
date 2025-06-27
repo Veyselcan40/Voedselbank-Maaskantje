@@ -58,93 +58,45 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
 
     Route::get('voorraad', function (\Illuminate\Http\Request $request) {
-        // Voorbeelddata, in echte app uit database
         $categorieen = ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
-        // Alle producten zijn nu verwijderbaar
-        $producten = session('producten', [
-            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
-        ]);
+        // Haal producten uit de database
+        $query = \App\Models\Product::query();
+        if ($request->filled('zoek_streepjescode')) {
+            $query->where('streepjescode', 'like', '%' . $request->input('zoek_streepjescode') . '%');
+        }
+        if ($request->filled('zoek_categorie')) {
+            $query->where('categorie', $request->input('zoek_categorie'));
+        }
+        $producten = $query->orderBy('streepjescode')->get()->toArray();
 
-        // Filteren
-        $zoekStreep = $request->input('zoek_streepjescode', '');
-        $zoekCategorie = $request->input('zoek_categorie', '');
-        if ($zoekStreep) {
-            $producten = array_filter($producten, fn($p) => str_contains($p['streepjescode'], $zoekStreep));
-        }
-        if ($zoekCategorie) {
-            $producten = array_filter($producten, fn($p) => $p['categorie'] === $zoekCategorie);
-        }
-        // Sorteren
         $sort = $request->input('sort', 'streepjescode');
         $direction = $request->input('direction', 'asc');
-        usort($producten, function($a, $b) use ($sort, $direction) {
-            $res = $a[$sort] <=> $b[$sort];
-            return $direction === 'desc' ? -$res : $res;
-        });
+        // Sorteren in PHP indien gewenst (optioneel, want DB doet het al)
+        // usort($producten, function($a, $b) use ($sort, $direction) {
+        //     $res = $a[$sort] <=> $b[$sort];
+        //     return $direction === 'desc' ? -$res : $res;
+        // });
 
-        return view('voorraad', compact('producten', 'categorieen', 'sort', 'direction', 'zoekStreep', 'zoekCategorie'));
+        return view('voorraad', compact('producten', 'categorieen', 'sort', 'direction'));
     })->name('voorraad');
 
     Route::post('voorraad/toevoegen', function (\Illuminate\Http\Request $request) {
-        $producten = session('producten', [
-            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
-        ]);
-
         $validated = $request->validate([
-            'streepjescode' => ['required', 'string', 'max:255'],
+            'streepjescode' => ['required', 'string', 'max:255', 'unique:producten,streepjescode'],
             'naam' => ['required', 'string', 'max:255'],
             'categorie' => ['required', 'string', 'max:255'],
             'aantal' => ['required', 'integer', 'min:1'],
         ]);
-
-        // Controleer op unieke streepjescode
-        foreach ($producten as $product) {
-            if ($product['streepjescode'] === $validated['streepjescode']) {
-                return redirect()->route('voorraad')
-                    ->withInput()
-                    ->withErrors(['streepjescode' => 'Een product met deze streepjescode bestaat al in de voorraad.'])
-                    ->with('error', 'Een product met deze streepjescode bestaat al in de voorraad.');
-            }
-        }
-
-        // Voeg nieuw product toe
-        $producten[] = [
-            'streepjescode' => $validated['streepjescode'],
-            'naam' => $validated['naam'],
-            'categorie' => $validated['categorie'],
-            'aantal' => $validated['aantal'],
-            'verwijderbaar' => true,
-        ];
-        session(['producten' => $producten]);
-
+        \App\Models\Product::create($validated);
         return redirect()->route('voorraad')->with('success', 'Product succesvol toegevoegd.');
     })->name('voorraad.toevoegen');
 
-    // Functies voor bewerken en verwijderen (voorraadbeheer)
     Route::get('voorraad/bewerk/{streepjescode}', function ($streepjescode) {
-        $producten = session('producten', [
-            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
-        ]);
-        $product = null;
-        foreach ($producten as $p) {
-            if ($p['streepjescode'] === $streepjescode) {
-                $product = $p;
-                break;
-            }
-        }
-        if (!$product) {
-            return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
-        }
+        $product = \App\Models\Product::where('streepjescode', $streepjescode)->firstOrFail();
         $categorieen = ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
-        // Toon het wijzigformulier, geef het product en categorieën door
+        $producten = \App\Models\Product::orderBy('streepjescode')->get()->toArray();
         return view('voorraad', [
-            'bewerkProduct' => $product,
+            'bewerkProduct' => $product->toArray(),
             'categorieen' => $categorieen,
             'producten' => $producten,
             'showEditForm' => true,
@@ -152,95 +104,28 @@ Route::middleware('auth')->group(function () {
     })->name('voorraad.bewerk');
 
     Route::post('voorraad/bewerk/{streepjescode}', function (\Illuminate\Http\Request $request, $streepjescode) {
-        $producten = session('producten', [
-            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
-        ]);
-
+        $product = \App\Models\Product::where('streepjescode', $streepjescode)->firstOrFail();
         $validated = $request->validate([
-            'streepjescode' => ['required', 'string', 'max:255'],
+            'streepjescode' => ['required', 'string', 'max:255', 'unique:producten,streepjescode,' . $product->id],
             'naam' => ['required', 'string', 'max:255'],
             'categorie' => ['required', 'string', 'max:255'],
             'aantal' => ['required', 'integer', 'min:1'],
         ]);
-
-        // Zoek het huidige product
-        $huidigIndex = null;
-        foreach ($producten as $key => $product) {
-            if ($product['streepjescode'] === $streepjescode) {
-                $huidigIndex = $key;
-                break;
-            }
-        }
-        if ($huidigIndex === null) {
-            return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
-        }
-
-        // Controleer op dubbele streepjescode of naam bij andere producten
-        foreach ($producten as $key => $product) {
-            if ($key === $huidigIndex) continue;
-            if ($product['streepjescode'] === $validated['streepjescode'] || strtolower($product['naam']) === strtolower($validated['naam'])) {
-                return redirect()->route('voorraad.bewerk', $streepjescode)
-                    ->withInput()
-                    ->withErrors(['streepjescode' => 'Er bestaat al een product met deze streepjescode of productnaam.'])
-                    ->with('error', 'Er bestaat al een product met deze streepjescode of productnaam.');
-            }
-        }
-
-        // Werk het product bij
-        $producten[$huidigIndex] = [
-            'streepjescode' => $validated['streepjescode'],
-            'naam' => $validated['naam'],
-            'categorie' => $validated['categorie'],
-            'aantal' => $validated['aantal'],
-            'verwijderbaar' => true,
-        ];
-        session(['producten' => $producten]);
-
+        $product->update($validated);
         return redirect()->route('voorraad')->with('success', 'Product succesvol bijgewerkt.');
     })->name('voorraad.bewerk.opslaan');
 
-    // Wijzig deze route van DELETE naar POST zodat het werkt met standaard HTML forms
     Route::post('voorraad/verwijder/{streepjescode}', function ($streepjescode) {
-        // Simuleer database lookup: zoek het product in de sessie
-        $producten = session('producten', [
-            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
-        ]);
-
-        // Simuleer voedselpakket-producten relatie (in echte app: pivot-tabel)
-        // Voorbeeld: [['pakket_id'=>1, 'streepjescode'=>'8712345678901'], ...]
-        $voedselpakket_producten = session('voedselpakket_producten', [
-            ['pakket_id' => 1, 'streepjescode' => '8712345678901'],
-            // Voeg meer toe indien gewenst
-        ]);
-
-        // Controle: zit het product in een voedselpakket?
-        $zitInPakket = false;
-        foreach ($voedselpakket_producten as $relatie) {
-            if ($relatie['streepjescode'] === $streepjescode) {
-                $zitInPakket = true;
-                break;
-            }
+        $product = \App\Models\Product::where('streepjescode', $streepjescode)->first();
+        if (!$product) {
+            return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
         }
-        if ($zitInPakket) {
-            // Foutmelding tonen, product blijft zichtbaar
+        // Controle: zit het product in een voedselpakket?
+        $heeftPakket = $product->voedselpakketten()->exists();
+        if ($heeftPakket) {
             return redirect()->route('voorraad')->with('error', 'Product kan niet verwijderd worden.');
         }
-
-        // Zoek het product
-        $gevonden = false;
-        foreach ($producten as $key => $product) {
-            if ($product['streepjescode'] === $streepjescode) {
-                $gevonden = true;
-                unset($producten[$key]);
-                session(['producten' => array_values($producten)]);
-                return redirect()->route('voorraad')->with('success', 'Product succesvol verwijderd.');
-            }
-        }
-        // Product niet gevonden
-        return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
+        $product->delete();
+        return redirect()->route('voorraad')->with('success', 'Product succesvol verwijderd.');
     })->name('voorraad.verwijder');
 });

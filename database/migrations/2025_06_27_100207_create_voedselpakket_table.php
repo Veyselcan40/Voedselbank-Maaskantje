@@ -11,7 +11,7 @@ class CreateVoedselpakketTable extends Migration
         if (!Schema::hasTable('voedselpakket')) {
             Schema::create('voedselpakket', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedBigInteger('klant_id')->nullable(); // nullable zodat 0 of null mag
+                $table->unsignedBigInteger('klant_id')->nullable();
                 $table->date('datum_samenstelling');
                 $table->date('datum_uitgifte')->nullable();
                 $table->timestamps();
