@@ -36,9 +36,16 @@ class LeverancierController extends Controller
             'Bedrijfsnaam' => 'required|string|max:255',
             'Adres' => 'required|string|max:255',
             'Contactpersoon' => 'required|string|max:255',
-            'Email' => 'required|email|max:255',
+            'Email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:leveranciers,Email',
+            ],
             'Telefoon' => ['required', 'regex:/^[0-9]+$/', 'max:255'],
             'EerstvolgendeLevering' => 'nullable|date',
+        ], [
+            'Email.unique' => 'Een leverancier met dit e-mailadres bestaat al.',
         ]);
 
         Leverancier::create($validated);
