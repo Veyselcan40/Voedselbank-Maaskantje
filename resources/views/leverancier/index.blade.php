@@ -91,7 +91,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-6 flex justify-center">
+        <div class="mt-6 flex flex-col items-center">
             <nav class="flex space-x-1" role="navigation" aria-label="Pagination">
                 @if ($leveranciers->onFirstPage())
                     <span class="px-3 py-2 bg-gray-100 text-gray-400 border border-gray-200 rounded cursor-default">&laquo;</span>
@@ -113,6 +113,9 @@
                     <span class="px-3 py-2 bg-gray-100 text-gray-400 border border-gray-200 rounded cursor-default">&raquo;</span>
                 @endif
             </nav>
+            <div class="mt-2 text-sm text-gray-600">
+                Pagina {{ $leveranciers->currentPage() }} van {{ $leveranciers->lastPage() }}
+            </div>
         </div>
 
         <!-- Modal voor verwijderen -->
