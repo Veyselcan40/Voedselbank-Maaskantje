@@ -131,9 +131,31 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('voorraad')->with('error', 'Bewerken van producten is nog niet geïmplementeerd.');
     })->name('voorraad.bewerk');
 
-    Route::delete('voorraad/verwijder/{streepjescode}', function ($streepjescode) {
-        // Hier zou je het product verwijderen als het mag
-        // Voor nu: redirect terug met een melding
-        return redirect()->route('voorraad')->with('error', 'Verwijderen van producten is nog niet geïmplementeerd.');
+    // Wijzig deze route van DELETE naar POST zodat het werkt met standaard HTML forms
+    Route::post('voorraad/verwijder/{streepjescode}', function ($streepjescode) {
+        // Simuleer database lookup: zoek het product in de sessie
+        $producten = session('producten', [
+            ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
+        ]);
+
+        // Zoek het product
+        $gevonden = false;
+        foreach ($producten as $key => $product) {
+            if ($product['streepjescode'] === $streepjescode) {
+                $gevonden = true;
+                // Controle: mag verwijderd worden?
+                if (isset($product['verwijderbaar']) && $product['verwijderbaar']) {
+                    unset($producten[$key]);
+                    session(['producten' => array_values($producten)]);
+                    return redirect()->route('voorraad')->with('success', 'Product succesvol verwijderd.');
+                } else {
+                    return redirect()->route('voorraad')->with('error', 'Product kan niet verwijderd worden.');
+                }
+            }
+        }
+        // Product niet gevonden
+        return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
     })->name('voorraad.verwijder');
 });
