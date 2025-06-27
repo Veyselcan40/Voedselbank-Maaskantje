@@ -9,6 +9,15 @@ class Klant extends Model
 {
     use HasFactory;
 
+
+    protected $table = 'klanten';
+
+    protected $fillable = [
+        'naam',
+        'adres',
+        'telefoon',
+        'email',
+
     protected $table = 'klanten'; // <-- fix hier
 
     protected $fillable = [
@@ -19,5 +28,6 @@ class Klant extends Model
         'aantal_volwassenen',
         'aantal_kinderen',
         'aantal_babys'
+
     ];
 }
