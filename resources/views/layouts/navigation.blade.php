@@ -16,7 +16,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('voorraad')" :active="request()->routeIs('voorraad')">
-                        {{ __('Voorraad') }}
+                        {{ __('Voorraadoverzicht') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('voorraad')" :active="request()->routeIs('voorraad')">
-                {{ __('Voorraad') }}
+                {{ __('Voorraadoverzicht') }}
             </x-responsive-nav-link>
         </div>
 

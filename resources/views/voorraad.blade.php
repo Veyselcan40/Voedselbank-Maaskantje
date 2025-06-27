@@ -190,6 +190,50 @@
                     </div>
                 @else
                     <div class="overflow-x-auto">
+                    {{-- Zoekformulier --}}
+                    <form method="GET" action="{{ route('voorraad') }}" class="mb-6 flex flex-col md:flex-row gap-4 items-end">
+                        <div>
+                            <label for="zoek_streepjescode" class="block text-gray-700 font-medium mb-1">Zoek op streepjescode</label>
+                            <input type="text" name="zoek_streepjescode" id="zoek_streepjescode"
+                                value="{{ old('zoek_streepjescode', $zoekStreep ?? '') }}"
+                                class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                                placeholder="Streepjescode">
+                        </div>
+                        <div>
+                            <label for="zoek_categorie" class="block text-gray-700 font-medium mb-1">Categorie</label>
+                            <select name="zoek_categorie" id="zoek_categorie"
+                                class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                                <option value="">-- Alle categorieën --</option>
+                                @foreach($categorieen as $cat)
+                                    <option value="{{ $cat }}" @selected(($zoekCategorie ?? '') == $cat)>{{ $cat }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition mt-6">
+                                Zoeken
+                            </button>
+                            @if(request('zoek_streepjescode') || request('zoek_categorie'))
+                                <a href="{{ route('voorraad') }}" class="ml-2 px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition mt-6 inline-block">Reset</a>
+                            @endif
+                        </div>
+                    </form>
+                    {{-- Einde zoekformulier --}}
+
+                    @php
+                        $isZoek = request('zoek_streepjescode') || request('zoek_categorie');
+                        $geenResultaat = $isZoek && (empty($producten) || count($producten) === 0);
+                    @endphp
+
+                    @if($geenResultaat)
+                        <div class="w-full bg-yellow-100 text-yellow-900 rounded-lg shadow p-6 text-center text-lg font-semibold mb-6">
+                            Geen producten gevonden met deze streepjescode.
+                        </div>
+                    @elseif(empty($producten) || count($producten) === 0)
+                        <div class="w-full bg-yellow-100 text-yellow-900 rounded-lg shadow p-6 text-center text-lg font-semibold mb-6">
+                            Er zijn momenteel geen producten in de voorraad beschikbaar.
+                        </div>
+                    @else
                     <table class="w-full min-w-[900px] border border-gray-200 rounded-xl overflow-hidden shadow">
                         <thead class="bg-white">
                             <tr>
@@ -226,6 +270,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    @endif
                     </div>
 
                     <!-- Verwijder bevestigingsmodal -->

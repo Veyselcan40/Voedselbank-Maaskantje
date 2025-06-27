@@ -60,18 +60,16 @@ Route::middleware('auth')->group(function () {
     Route::get('voorraad', function (\Illuminate\Http\Request $request) {
         // Voorbeelddata, in echte app uit database
         $categorieen = ['Voedsel', 'Verzorging', 'Drinken', 'Overig'];
-        $sort = $request->input('sort', 'streepjescode');
-        $direction = $request->input('direction', 'asc');
-        $zoekStreep = $request->input('zoek_streepjescode', '');
-        $zoekCategorie = $request->input('zoek_categorie', '');
-
+        // Alle producten zijn nu verwijderbaar
         $producten = session('producten', [
             ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
             ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
         ]);
 
         // Filteren
+        $zoekStreep = $request->input('zoek_streepjescode', '');
+        $zoekCategorie = $request->input('zoek_categorie', '');
         if ($zoekStreep) {
             $producten = array_filter($producten, fn($p) => str_contains($p['streepjescode'], $zoekStreep));
         }
@@ -79,6 +77,8 @@ Route::middleware('auth')->group(function () {
             $producten = array_filter($producten, fn($p) => $p['categorie'] === $zoekCategorie);
         }
         // Sorteren
+        $sort = $request->input('sort', 'streepjescode');
+        $direction = $request->input('direction', 'asc');
         usort($producten, function($a, $b) use ($sort, $direction) {
             $res = $a[$sort] <=> $b[$sort];
             return $direction === 'desc' ? -$res : $res;
@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::post('voorraad/toevoegen', function (\Illuminate\Http\Request $request) {
         $producten = session('producten', [
             ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
             ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
         ]);
 
@@ -128,7 +128,7 @@ Route::middleware('auth')->group(function () {
     Route::get('voorraad/bewerk/{streepjescode}', function ($streepjescode) {
         $producten = session('producten', [
             ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
             ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
         ]);
         $product = null;
@@ -154,7 +154,7 @@ Route::middleware('auth')->group(function () {
     Route::post('voorraad/bewerk/{streepjescode}', function (\Illuminate\Http\Request $request, $streepjescode) {
         $producten = session('producten', [
             ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
             ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
         ]);
 
@@ -194,7 +194,7 @@ Route::middleware('auth')->group(function () {
             'naam' => $validated['naam'],
             'categorie' => $validated['categorie'],
             'aantal' => $validated['aantal'],
-            'verwijderbaar' => $producten[$huidigIndex]['verwijderbaar'] ?? true,
+            'verwijderbaar' => true,
         ];
         session(['producten' => $producten]);
 
@@ -206,7 +206,7 @@ Route::middleware('auth')->group(function () {
         // Simuleer database lookup: zoek het product in de sessie
         $producten = session('producten', [
             ['streepjescode' => '8712345678901', 'naam' => 'Pasta', 'categorie' => 'Voedsel', 'aantal' => 120, 'verwijderbaar' => true],
-            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => false],
+            ['streepjescode' => '8712345678902', 'naam' => 'Rijst', 'categorie' => 'Voedsel', 'aantal' => 80, 'verwijderbaar' => true],
             ['streepjescode' => '8712345678903', 'naam' => 'Shampoo', 'categorie' => 'Verzorging', 'aantal' => 45, 'verwijderbaar' => true],
         ]);
 
@@ -215,17 +215,13 @@ Route::middleware('auth')->group(function () {
         foreach ($producten as $key => $product) {
             if ($product['streepjescode'] === $streepjescode) {
                 $gevonden = true;
-                // Controle: mag verwijderd worden?
-                if (isset($product['verwijderbaar']) && $product['verwijderbaar']) {
-                    unset($producten[$key]);
-                    session(['producten' => array_values($producten)]);
-                    return redirect()->route('voorraad')->with('success', 'Product succesvol verwijderd.');
-                } else {
-                    return redirect()->route('voorraad')->with('error', 'Product kan niet verwijderd worden.');
-                }
+                // Altijd verwijderbaar
+                unset($producten[$key]);
+                session(['producten' => array_values($producten)]);
+                return redirect()->route('voorraad')->with('success', 'Product succesvol verwijderd.');
             }
         }
         // Product niet gevonden
         return redirect()->route('voorraad')->with('error', 'Product niet gevonden.');
     })->name('voorraad.verwijder');
-});
+}); 
