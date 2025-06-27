@@ -48,8 +48,8 @@
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Actief</label>
                 <select name="Actief" required class="mt-1 block w-full rounded border-gray-300 shadow-sm">
-                    <option value="1" {{ old('Actief', '1') == '1' ? 'selected' : '' }}>Actief</option>
-                    <option value="0" {{ old('Actief') == '0' ? 'selected' : '' }}>Niet actief</option>
+                    <option value="1" {{ old('Actief', '1') == '1' ? 'selected' : '' }}>Ja</option>
+                    <option value="0" {{ old('Actief') == '0' ? 'selected' : '' }}>Nee</option>
                 </select>
                 @error('Actief') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>

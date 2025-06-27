@@ -65,9 +65,9 @@
                             <td class="px-4 py-2 text-sm text-black">{{ ucfirst($leverancier->Leverancierstype) }}</td>
                             <td class="px-4 py-2 text-sm">
                                 @if($leverancier->Actief)
-                                    <span class="px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-semibold">Actief</span>
+                                    <span class="px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-semibold">Ja</span>
                                 @else
-                                    <span class="px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-semibold">Niet actief</span>
+                                    <span class="px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-semibold">Nee</span>
                                 @endif
                             </td>
                             <td class="px-4 py-2 text-sm">
