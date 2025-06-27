@@ -78,9 +78,22 @@ class LeverancierController extends Controller
             'Bedrijfsnaam' => 'required|string|max:255',
             'Adres' => 'required|string|max:255',
             'Contactpersoon' => 'required|string|max:255',
-            'Email' => 'required|email|max:255',
-            'Telefoon' => ['required', 'regex:/^[0-9]+$/', 'max:255'],
+            'Email' => [
+                'required',
+                'email:rfc,dns',
+                'max:255',
+                'unique:leveranciers,Email,' . $leverancier->id,
+            ],
+            'Telefoon' => [
+                'required',
+                'regex:/^[0-9]{8,12}$/',
+                'max:12'
+            ],
             'EerstvolgendeLevering' => 'nullable|date',
+        ], [
+            'Email.email' => 'Voer een geldig e-mailadres in.',
+            'Email.unique' => 'Een leverancier met dit e-mailadres bestaat al.',
+            'Telefoon.regex' => 'Voer een telefoonnummer in van minimaal 8 en maximaal 12 cijfers.',
         ]);
 
         $leverancier->update($validated);
@@ -97,3 +110,4 @@ class LeverancierController extends Controller
         return redirect()->route('leverancier.index')->with('success', 'Leverancier succesvol verwijderd.');
     }
 }
+
