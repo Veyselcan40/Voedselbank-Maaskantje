@@ -13,12 +13,21 @@ class EmailVerificationNotificationController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false));
+        // Server-side validatie: controleer of email bestaat en geldig is
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        try {
+            if ($request->user()->hasVerifiedEmail()) {
+                return redirect()->intended(route('dashboard', absolute: false));
+            }
+
+            $request->user()->sendEmailVerificationNotification();
+
+            return back()->with('status', 'verification-link-sent');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Er is een fout opgetreden: ' . $e->getMessage());
         }
-
-        $request->user()->sendEmailVerificationNotification();
-
-        return back()->with('status', 'verification-link-sent');
     }
 }
