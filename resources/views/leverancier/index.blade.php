@@ -16,7 +16,7 @@
         <div class="flex items-center justify-between mb-6">
             <p class="text-base font-semibold text-black tracking-tight">Overzicht van alle leveranciers</p>
             <a href="{{ route('leverancier.create') }}"
-               class="text-green-600 hover:underline hover:text-green-800 text-sm font-semibold transition">
+               class="inline-block px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded shadow hover:bg-green-700 transition">
                 Leverancier toevoegen
             </a>
         </div>
