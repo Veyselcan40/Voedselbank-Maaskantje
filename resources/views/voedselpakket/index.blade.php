@@ -31,7 +31,7 @@
                             <td class="px-4 py-2 border-b">{{ $pakket->datum_uitgifte ?? 'Nog niet uitgegeven' }}</td>
                             <td class="px-4 py-2 border-b">
                                 <a href="{{ route('voedselpakketten.edit', $pakket->id) }}"
-                                   class="text-blue-600 hover:underline mr-2">Bewerken</a>
+                                   class="text-blue-600 hover:underline mr-2">Wijzigen</a>
 
                                 <form action="{{ route('voedselpakketten.destroy', $pakket->id) }}" method="POST" class="inline">
                                     @csrf

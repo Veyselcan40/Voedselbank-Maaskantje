@@ -10,7 +10,7 @@
             @csrf
             <div>
             <label for="klant_id" class="block text-gray-700 mb-1">Klant</label>
-            <select name="klant_id" id="klant_id" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
+            <select name="klant_id" id="klant_id" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" required>
                 <option value="">-- Selecteer een klant --</option>
                 @foreach($klanten as $klant)
                     <option value="{{ $klant->id }}">{{ $klant->naam }}</option>
