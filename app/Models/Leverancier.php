@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Leverancier extends Model
 {
-    protected $table = 'Leverancier';
-    protected $primaryKey = 'Id';
-    public $timestamps = false;
+    protected $table = 'leveranciers'; // <-- aangepast naar meervoud
+    protected $primaryKey = 'id';      // <-- standaard Laravel conventie
+    public $timestamps = true;         // timestamps zijn aanwezig in migratie
 
     protected $fillable = [
-        'Id',
         'Bedrijfsnaam',
         'Adres',
         'Contactpersoon',
@@ -20,3 +19,4 @@ class Leverancier extends Model
         'EerstvolgendeLevering'
     ];
 }
+

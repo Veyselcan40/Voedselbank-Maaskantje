@@ -13,8 +13,48 @@ return new class extends Migration
     {
         Schema::create('leveranciers', function (Blueprint $table) {
             $table->id();
+            $table->string('Bedrijfsnaam');
+            $table->string('Adres');
+            $table->string('Contactpersoon');
+            $table->string('Email');
+            $table->string('Telefoon');
+            $table->timestamp('EerstvolgendeLevering')->nullable();
             $table->timestamps();
         });
+
+        // Dummy data toevoegen
+        \DB::table('leveranciers')->insert([
+            [
+                'Bedrijfsnaam' => 'VersGroothandel BV',
+                'Adres' => 'Marktstraat 12, 1234 AB Maaskantje',
+                'Contactpersoon' => 'Jan Jansen',
+                'Email' => 'info@versgroothandel.nl',
+                'Telefoon' => '0612345678',
+                'EerstvolgendeLevering' => now()->addDays(2),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'Bedrijfsnaam' => 'FruitExpress',
+                'Adres' => 'Appellaan 5, 5678 CD Maaskantje',
+                'Contactpersoon' => 'Piet Pietersen',
+                'Email' => 'contact@fruitexpress.nl',
+                'Telefoon' => '0687654321',
+                'EerstvolgendeLevering' => now()->addDays(5),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'Bedrijfsnaam' => 'Bakkerij de Boer',
+                'Adres' => 'Bakkerstraat 1, 4321 EF Maaskantje',
+                'Contactpersoon' => 'Klaas de Boer',
+                'Email' => 'klaas@bakkerijdeboer.nl',
+                'Telefoon' => '0622334455',
+                'EerstvolgendeLevering' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 
     /**
