@@ -20,6 +20,7 @@
                     </div>
                     <div class="overflow-x-auto">
                         @if($klanten->isEmpty())
+                        <!-- dit is de unhappy scenario voor de read -->
                             <div class="p-6 text-center text-gray-600">
                                 Er zijn nog geen klanten beschikbaar.
                             </div>
