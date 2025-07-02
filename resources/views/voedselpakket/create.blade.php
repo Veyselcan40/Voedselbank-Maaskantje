@@ -29,12 +29,12 @@
 
             <div>
                 <label class="block text-gray-700 mb-1">Datum Samenstelling:</label>
-                <input type="date" name="datum_samenstelling" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
+                <input type="date" name="datum_samenstelling" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" required>
             </div>
 
             <div>
                 <label class="block text-gray-700 mb-1">Datum Uitgifte:</label>
-                <input type="date" name="datum_uitgifte" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
+                <input type="date" name="datum_uitgifte" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" required>
             </div>
 
             <div>
@@ -51,7 +51,7 @@
                                 <label for="product-{{ $product->id }}" class="flex-1">
                                     {{ $product->streepjescode }} - {{ $product->naam }} ({{ $product->categorie }}) - {{ $product->aantal }} op voorraad
                                 </label>
-                                <input type="number" name="producten[{{ $loop->index }}][aantal]" min="1" max="{{ $product->aantal }}" placeholder="Aantal" class="w-24 border rounded px-2 py-1">
+                                <input type="number" name="producten[{{ $loop->index }}][aantal]" min="1" max="{{ $product->aantal }}" placeholder="Aantal" class="w-24 border rounded px-2 py-1" required>
                             </div>
                         @endforeach
                     @endif

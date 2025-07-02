@@ -16,9 +16,14 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        try {
+            return view('profile.edit', [
+                'user' => $request->user(),
+            ]);
+        } catch (\Exception $e) {
+            // You can log the exception or handle it as needed
+            abort(500, 'An error occurred while loading the profile.');
+        }
     }
 
     /**
